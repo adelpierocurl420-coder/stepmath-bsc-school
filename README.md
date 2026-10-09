@@ -1,26 +1,33 @@
-# StepMath BSc
+# StepMath HSC
 
-Undergraduate mathematics trainer: **every calculation step has a reason**; proofs use **Plan → Formal → QED**.
+HSC mathematics: every step justified.
 
-## Modules
-- Calculus (limits, differentiation, integration)
-- Linear algebra (det, inverse, Gaussian, eigenvalues)
-- Differential equations (separable, integrating factor, characteristic equation)
-- Series (geometric, ratio-test sketch)
-- Probability (conditional, Bayes, expectation/variance)
-- Proofs (induction, contradiction, direct)
+A static web app that shows HSC-style math solutions as Given → Goal → numbered steps (work + reason) → final answer, plus formal proofs and limits. Works on mobile and desktop.
 
-## Run
-Open `index.html`, or:
-```bash
-npm run build
-# drag dist/ to https://app.netlify.com/drop
-```
+**Live demo:** https://YOUR-SITE.netlify.app
 
-## 60s demo
-1. **60s demo** / Calculus → chain rule  
-2. **Prove** → induction sum  
-3. **Limits** page  
+## Features
+- Calculate, Prove and Limits tabs
+- Example bank with search/filter
+- Copy solution, print-friendly view
+- 60-second demo button
+- Ctrl/Cmd+Enter to solve
+- Tone toggle: Simple / Formal HSC
+- Honest Limits page (what it can't do)
 
-## Honesty
-Not a claim to solve every undergrad problem. Unsupported input fails with a clear message and example suggestions.
+## Run locally
+No build step. Open `index.html` in a browser, or:
+
+    python3 -m http.server 8000
+
+## Deploy
+Static site. On Netlify: build command empty, publish directory `.`
+
+## Demo login
+None. No login required.
+
+## AI tool disclosure
+Built with assistance from Claude (Anthropic) for code generation and debugging. Design direction, testing, and final decisions by the author.
+
+## License
+MIT, see LICENSE.
