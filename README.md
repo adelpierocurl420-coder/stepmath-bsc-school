@@ -4,7 +4,7 @@ HSC mathematics: every step justified.
 
 A static web app that shows HSC-style math solutions as Given → Goal → numbered steps (work + reason) → final answer, plus formal proofs and limits. Works on mobile and desktop.
 
-**Live demo:** https://YOUR-SITE.netlify.app
+**Live demo:** https://YOURSITE.netlify.app
 
 ## Features
 - Calculate, Prove and Limits tabs
@@ -27,7 +27,7 @@ Static site. On Netlify: build command empty, publish directory `.`
 None. No login required.
 
 ## AI tool disclosure
-Built with assistance from Claude (Anthropic) for code generation and debugging. Design direction, testing, and final decisions by the author.
+Built with assistance from Claude (Anthropic) and Grok (xAI) for code generation and debugging. Design direction, testing, and final decisions by the author.
 
 ## License
 MIT, see LICENSE.
