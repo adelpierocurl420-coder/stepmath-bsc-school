@@ -1,10 +1,10 @@
-# Bscathematix
+# Mathcracked
 
 BSc-level mathematics, every step justified.
 
 A web app that solves BSc-level math problems and shows each step with the reason behind it. Works on mobile and desktop.
 
-**Live demo:** https://bscathematix.netlify.app
+**Live demo:** https://mathcracked.netlify.app
 
 ## Features
 - Step-by-step solutions: Given, Goal, numbered steps with reasons, final answer
