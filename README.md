@@ -1,4 +1,4 @@
-# Mathcracked
+# StepMath
 
 BSc-level mathematics, every step justified.
 
