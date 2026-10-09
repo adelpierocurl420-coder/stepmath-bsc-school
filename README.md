@@ -1,19 +1,17 @@
-# StepMath HSC
+# Bscathematix
 
-HSC mathematics: every step justified.
+BSc-level mathematics, every step justified.
 
-A static web app that shows HSC-style math solutions as Given → Goal → numbered steps (work + reason) → final answer, plus formal proofs and limits. Works on mobile and desktop.
+A web app that solves BSc-level math problems and shows each step with the reason behind it. Works on mobile and desktop.
 
-**Live demo:** https://YOURSITE.netlify.app
+**Live demo:** https://bscathematix.netlify.app
 
 ## Features
-- Calculate, Prove and Limits tabs
+- Step-by-step solutions: Given, Goal, numbered steps with reasons, final answer
 - Example bank with search/filter
-- Copy solution, print-friendly view
-- 60-second demo button
-- Ctrl/Cmd+Enter to solve
-- Tone toggle: Simple / Formal HSC
-- Honest Limits page (what it can't do)
+- Copy solution and print-friendly view
+- Demo button for a quick walkthrough
+- Honest limits page (what it can't solve)
 
 ## Run locally
 No build step. Open `index.html` in a browser, or:
