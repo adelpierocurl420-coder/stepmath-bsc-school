@@ -1,8 +1,8 @@
 {
-  "name": "stepmath-bsc",
+  "name": "mathcracked",
   "version": "1.0.0",
   "private": true,
-  "description": "StepMath BSc — undergraduate mathematics with every step justified",
+  "description": "mathcracked BSc — undergraduate mathematics with every step justified",
   "scripts": {
     "build": "mkdir -p dist && cp index.html dist/index.html && echo ok",
     "start": "npx --yes serve -l 3000 .",
