@@ -1,4 +1,4 @@
-# StepMath
+# StepMath BSc
 
 BSc-level mathematics, every step justified.
 
@@ -32,7 +32,7 @@ No build step. Open `index.html` in a browser, or:
     python3 -m http.server 8000
 
 ## Deploy
-Static site. On Netlify: build command empty, publish directory `.`
+Static site. On Netlify: build command `npm run build`, publish directory `dist` (see netlify.toml).
 
 ## Demo login
 None. No login required.
