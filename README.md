@@ -4,7 +4,7 @@
 
 Built for the **9th DRMC International Tech Carnival 2026: AI Web Development Contest** (theme: *Smart Club Operations*).
 
-**Live demo:** https://mathcracked.netlify.app
+**Live demo:** https://festdesk.netlify.app
 **Repository:** https://github.com/adelpierocurl420-coder/stepmath-bsc
 
 ## Project description
@@ -74,7 +74,7 @@ On first load the app generates sample data relative to the current date, so dea
 
 ## Deployment URL
 
-https://mathcracked.netlify.app
+https://festdesk.netlify.app
 
 ## Demo credentials
 
