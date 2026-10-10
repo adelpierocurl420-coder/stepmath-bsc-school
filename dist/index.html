@@ -1,1282 +1,628 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="description" content="StepMath BSc — Undergraduate BSc–style mathematics with every step justified. Calculate and prove with understanding." />
-  <title>StepMath BSc — Every step justified</title>
-  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect fill='%230f2744' width='32' height='32' rx='6'/%3E%3Ctext x='16' y='22' text-anchor='middle' fill='%23c9a227' font-size='16' font-family='serif'%3ES%3C/text%3E%3C/svg%3E" />
-  <style>
-    :root {
-      --ink: #0f2744;
-      --ink-soft: #243b55;
-      --paper: #f7f4ef;
-      --card: #ffffff;
-      --line: #d9e0ea;
-      --muted: #5c6b7a;
-      --accent: #1f6b4a;
-      --accent-soft: #e6f2ec;
-      --warn: #8a5a00;
-      --answer: #0f2744;
-      --shadow: 0 10px 30px rgba(15, 39, 68, .08);
-      --radius: 14px;
-      --font: "Segoe UI", system-ui, -apple-system, sans-serif;
-      --mono: "Cambria Math", "Times New Roman", serif;
-    }
-    * { box-sizing: border-box; }
-    html { scroll-behavior: smooth; }
-    body {
-      margin: 0;
-      font-family: var(--font);
-      color: var(--ink);
-      background:
-        radial-gradient(1200px 600px at 10% -10%, #e8eef6 0%, transparent 55%),
-        radial-gradient(900px 500px at 100% 0%, #eef6f1 0%, transparent 50%),
-        var(--paper);
-      line-height: 1.55;
-      min-height: 100%;
-    }
-    a { color: var(--accent); text-decoration: none; }
-    a:hover { text-decoration: underline; }
-    .wrap { width: min(1120px, calc(100% - 2rem)); margin: 0 auto; }
-    header.app {
-      position: sticky; top: 0; z-index: 20;
-      backdrop-filter: blur(10px);
-      background: rgba(247, 244, 239, .92);
-      border-bottom: 1px solid var(--line);
-    }
-    .nav {
-      display: flex; align-items: center; justify-content: space-between;
-      gap: 1rem; padding: .85rem 0; flex-wrap: wrap;
-    }
-    .brand { display: flex; align-items: center; gap: .75rem; }
-    .mark {
-      width: 36px; height: 36px; border-radius: 10px;
-      background: var(--ink); color: #c9a227;
-      display: grid; place-items: center; font-weight: 700; font-family: var(--mono);
-    }
-    .brand h1 { font-size: 1.05rem; margin: 0; letter-spacing: .02em; }
-    .brand small { display: block; color: var(--muted); font-size: .75rem; font-weight: 500; }
-    .nav-links { display: flex; gap: .35rem; flex-wrap: wrap; }
-    .nav-links button, .btn {
-      border: 1px solid var(--line); background: var(--card); color: var(--ink);
-      border-radius: 999px; padding: .55rem 1rem; font: inherit; font-weight: 600;
-      cursor: pointer; transition: .15s ease;
-    }
-    .nav-links button.active, .btn.primary {
-      background: var(--ink); color: #fff; border-color: var(--ink);
-    }
-    .btn.primary:hover { background: var(--ink-soft); }
-    .btn.ghost { background: transparent; }
-    .hero {
-      display: grid; grid-template-columns: 1.3fr .9fr; gap: 1.5rem;
-      padding: 2rem 0 1.25rem;
-    }
-    @media (max-width: 860px) {
-      .hero { grid-template-columns: 1fr; padding-top: 1.25rem; }
-    }
-    .hero h2 {
-      font-size: clamp(1.6rem, 3vw, 2.35rem);
-      line-height: 1.2; margin: 0 0 .75rem;
-      letter-spacing: -.02em;
-    }
-    .hero p { margin: 0 0 1rem; color: var(--muted); max-width: 38rem; }
-    .trust {
-      display: flex; flex-wrap: wrap; gap: .5rem; margin-bottom: 1rem;
-    }
-    .trust span {
-      font-size: .78rem; font-weight: 600; color: var(--ink-soft);
-      background: var(--card); border: 1px solid var(--line);
-      border-radius: 999px; padding: .35rem .7rem;
-    }
-    .panel {
-      background: var(--card); border: 1px solid var(--line);
-      border-radius: var(--radius); box-shadow: var(--shadow); padding: 1rem;
-    }
-    .panel h3 { margin: 0 0 .75rem; font-size: .95rem; }
-    .layout {
-      display: grid; grid-template-columns: 280px 1fr; gap: 1.25rem;
-      padding-bottom: 3rem; align-items: start;
-    }
-    @media (max-width: 860px) {
-      .layout { grid-template-columns: 1fr; }
-    }
-    .side { position: sticky; top: 72px; }
-    @media (max-width: 860px) { .side { position: static; } }
-    .side .group { margin-bottom: 1rem; }
-    .side h4 {
-      margin: 0 0 .5rem; font-size: .72rem; letter-spacing: .08em;
-      text-transform: uppercase; color: var(--muted);
-    }
-    .chips { display: flex; flex-wrap: wrap; gap: .4rem; }
-    .chip {
-      border: 1px solid var(--line); background: #fff; border-radius: 999px;
-      padding: .4rem .7rem; font-size: .82rem; cursor: pointer; font-weight: 600;
-    }
-    .chip.active { background: var(--accent-soft); border-color: #b7d7c7; color: var(--accent); }
-    textarea, select, input[type="text"] {
-      width: 100%; border: 1px solid var(--line); border-radius: 12px;
-      padding: .85rem 1rem; font: inherit; background: #fff; color: var(--ink);
-      resize: vertical; min-height: 96px;
-    }
-    textarea:focus, select:focus, input:focus {
-      outline: 2px solid #c5d8f0; border-color: #9db7d8;
-    }
-    .row { display: flex; gap: .6rem; flex-wrap: wrap; margin-top: .75rem; }
-    .hint { color: var(--muted); font-size: .85rem; margin-top: .5rem; }
-    .solution { margin-top: 1rem; }
-    .sol-block {
-      border: 1px solid var(--line); border-radius: 12px; overflow: hidden; background: #fff;
-    }
-    .sol-head {
-      display: flex; justify-content: space-between; gap: .5rem; flex-wrap: wrap;
-      padding: .85rem 1rem; background: #f3f6fa; border-bottom: 1px solid var(--line);
-      font-weight: 700;
-    }
-    .meta { color: var(--muted); font-weight: 500; font-size: .85rem; }
-    .sec { padding: 1rem; border-bottom: 1px solid var(--line); }
-    .sec:last-child { border-bottom: 0; }
-    .sec h5 {
-      margin: 0 0 .45rem; font-size: .72rem; letter-spacing: .08em;
-      text-transform: uppercase; color: var(--muted);
-    }
-    .steps { list-style: none; padding: 0; margin: 0; display: grid; gap: .65rem; }
-    .steps li {
-      display: grid; grid-template-columns: 36px 1fr; gap: .75rem;
-      padding: .75rem; border-radius: 10px; background: #fbfcfe; border: 1px solid #e8eef5;
-    }
-    .num {
-      width: 36px; height: 36px; border-radius: 10px; background: var(--ink); color: #fff;
-      display: grid; place-items: center; font-weight: 700; font-size: .9rem;
-    }
-    .work { font-family: var(--mono); font-size: 1.12rem; }
-    .why { color: var(--muted); font-size: .9rem; margin-top: .25rem; }
-    .answer {
-      background: var(--ink); color: #fff; border-radius: 12px; padding: 1rem 1.1rem;
-      font-family: var(--mono); font-size: 1.15rem;
-    }
-    .answer span { display: block; font-family: var(--font); font-size: .75rem; letter-spacing: .08em; text-transform: uppercase; opacity: .75; margin-bottom: .35rem; }
-    .plan {
-      background: var(--accent-soft); border: 1px solid #cfe3d8; border-radius: 12px;
-      padding: .85rem 1rem; margin-bottom: .75rem;
-    }
-    .plan strong { color: var(--accent); }
-    .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
-    @media (max-width: 720px) { .two-col { grid-template-columns: 1fr; } }
-    .formal-line {
-      display: grid; grid-template-columns: 40px 1fr auto; gap: .5rem;
-      padding: .55rem 0; border-bottom: 1px dashed var(--line); align-items: start;
-    }
-    .formal-line:last-child { border-bottom: 0; }
-    .tag {
-      font-size: .72rem; font-weight: 700; color: var(--accent);
-      background: #fff; border: 1px solid #cfe3d8; border-radius: 999px;
-      padding: .2rem .5rem; white-space: nowrap;
-    }
-    footer {
-      border-top: 1px solid var(--line); padding: 1.5rem 0 2.5rem; color: var(--muted); font-size: .9rem;
-    }
-    .hidden { display: none !important; }
-    .toast {
-      position: fixed; bottom: 1rem; left: 50%; transform: translateX(-50%);
-      background: var(--ink); color: #fff; padding: .7rem 1rem; border-radius: 999px;
-      font-size: .85rem; opacity: 0; pointer-events: none; transition: .25s;
-      z-index: 50;
-    }
-    .toast.show { opacity: 1; }
-    .limits li { margin-bottom: .35rem; }
-    .badge-note {
-      font-size: .8rem; color: var(--warn); background: #fff7e8; border: 1px solid #f0dfb4;
-      border-radius: 10px; padding: .65rem .8rem; margin-top: .75rem;
-    }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FestDesk · DRMC IT Club Event Registration</title>
+<meta name="description" content="Browse fests, explore events and register in one place. Organizer dashboard included. Built for the DRMC International Tech Carnival 2026 AI Web Development Contest.">
+<style>
+:root{
+  --bg:#f5f3ee;--card:#ffffff;--ink:#101c33;--muted:#5b667a;--line:#e3e0d8;
+  --accent:#0b7a75;--accent-ink:#ffffff;--accent-soft:#dff3f1;
+  --ok:#17803d;--ok-soft:#dcf5e4;--warn:#9a6700;--warn-soft:#fff1c9;--bad:#b42318;--bad-soft:#fde4e1;--gray-soft:#ebe9e3;
+  --shadow:0 1px 2px rgba(16,28,51,.06),0 6px 20px rgba(16,28,51,.06);
+  --r:14px;
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0c1220;--card:#141c2f;--ink:#e8edf7;--muted:#9aa6bd;--line:#26314a;
+    --accent:#3cc6bd;--accent-ink:#06201e;--accent-soft:#12302f;
+    --ok:#5fd08a;--ok-soft:#12301f;--warn:#f0c14b;--warn-soft:#352b0d;--bad:#ff8a7e;--bad-soft:#3a1814;--gray-soft:#1d2740;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 20px rgba(0,0,0,.3);
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0c1220;--card:#141c2f;--ink:#e8edf7;--muted:#9aa6bd;--line:#26314a;
+  --accent:#3cc6bd;--accent-ink:#06201e;--accent-soft:#12302f;
+  --ok:#5fd08a;--ok-soft:#12301f;--warn:#f0c14b;--warn-soft:#352b0d;--bad:#ff8a7e;--bad-soft:#3a1814;--gray-soft:#1d2740;
+  --shadow:0 1px 2px rgba(0,0,0,.4),0 6px 20px rgba(0,0,0,.3);
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;min-height:100vh}
+a{color:var(--accent)}
+h1,h2,h3{line-height:1.2;margin:0 0 .5rem}
+h1{font-size:clamp(1.6rem,4.5vw,2.4rem);letter-spacing:-.02em}
+h2{font-size:1.35rem}
+h3{font-size:1.05rem}
+p{margin:0 0 .75rem}
+.wrap{max-width:1120px;margin:0 auto;padding:0 16px}
+header.top{position:sticky;top:0;z-index:30;background:var(--card);border-bottom:1px solid var(--line)}
+.bar{display:flex;align-items:center;gap:12px;padding:10px 0;flex-wrap:wrap}
+.brand{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--ink);font-weight:800;font-size:1.1rem}
+.logo{width:36px;height:36px;border-radius:10px;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-weight:900}
+.brand small{display:block;font-weight:500;color:var(--muted);font-size:.72rem;margin-top:-2px}
+nav.main{margin-left:auto;display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+nav.main a,nav.main button{padding:8px 12px;border-radius:999px;text-decoration:none;color:var(--ink);font-weight:600;font-size:.92rem;border:1px solid transparent;background:none;cursor:pointer;font-family:inherit}
+nav.main a:hover,nav.main button:hover{background:var(--gray-soft)}
+nav.main a.active{background:var(--accent-soft);color:var(--accent);border-color:var(--accent)}
+main{padding:22px 0 60px}
+.hero{background:linear-gradient(135deg,var(--accent-soft),transparent 70%),var(--card);border:1px solid var(--line);border-radius:20px;padding:clamp(18px,4vw,34px);box-shadow:var(--shadow);margin-bottom:26px}
+.hero p{color:var(--muted);max-width:60ch}
+.stats{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:5px 11px;border-radius:999px;background:var(--gray-soft);font-size:.82rem;font-weight:600}
+.grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr))}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px;box-shadow:var(--shadow)}
+.card.link{display:block;text-decoration:none;color:inherit;transition:transform .12s,border-color .12s}
+.card.link:hover{transform:translateY(-2px);border-color:var(--accent)}
+.card .meta{color:var(--muted);font-size:.88rem;display:flex;flex-direction:column;gap:2px;margin:6px 0 10px}
+.badge{display:inline-block;padding:3px 9px;border-radius:999px;font-size:.75rem;font-weight:700;background:var(--gray-soft);color:var(--ink)}
+.badge.ok{background:var(--ok-soft);color:var(--ok)}
+.badge.warn{background:var(--warn-soft);color:var(--warn)}
+.badge.bad{background:var(--bad-soft);color:var(--bad)}
+.badge.acc{background:var(--accent-soft);color:var(--accent)}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.row.between{justify-content:space-between}
+.section{margin-top:28px}
+.section>h2{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap}
+.muted{color:var(--muted)}
+.small{font-size:.86rem}
+.progress{height:8px;border-radius:99px;background:var(--gray-soft);overflow:hidden;margin:6px 0}
+.progress>i{display:block;height:100%;background:var(--accent);border-radius:99px}
+.progress.full>i{background:var(--bad)}
+.progress.mid>i{background:var(--warn)}
+.filters{display:grid;gap:10px;grid-template-columns:2fr 1fr 1fr auto;margin-bottom:14px;align-items:end}
+@media(max-width:760px){.filters{grid-template-columns:1fr 1fr}.filters .grow{grid-column:1/-1}}
+label{display:block;font-weight:600;font-size:.86rem;margin-bottom:4px}
+input,select,textarea{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:var(--card);color:var(--ink);font:inherit;min-height:42px}
+textarea{min-height:84px;resize:vertical}
+input:focus,select:focus,textarea:focus,button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+input[type=checkbox]{width:auto;min-height:0}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 16px;border-radius:10px;border:1px solid var(--accent);background:var(--accent);color:var(--accent-ink);font:inherit;font-weight:700;cursor:pointer;text-decoration:none;min-height:42px}
+.btn:hover{filter:brightness(1.07)}
+.btn.ghost{background:transparent;color:var(--accent)}
+.btn.danger{background:var(--bad);border-color:var(--bad);color:#fff}
+.btn.danger.ghost{background:transparent;color:var(--bad)}
+.btn.sm{padding:6px 10px;min-height:34px;font-size:.85rem}
+.btn[disabled]{opacity:.5;cursor:not-allowed;filter:none}
+.two{display:grid;gap:18px;grid-template-columns:1.2fr 1fr}
+@media(max-width:860px){.two{grid-template-columns:1fr}}
+.form-grid{display:grid;gap:12px;grid-template-columns:1fr 1fr}
+.form-grid .full{grid-column:1/-1}
+@media(max-width:560px){.form-grid{grid-template-columns:1fr}}
+.err{color:var(--bad);font-size:.82rem;margin-top:3px}
+.crumbs{font-size:.88rem;color:var(--muted);margin-bottom:10px}
+.crumbs a{color:var(--muted)}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 16px;border-bottom:1px solid var(--line);padding-bottom:10px}
+.tabs button{padding:8px 14px;border-radius:999px;border:1px solid var(--line);background:var(--card);color:var(--ink);font:inherit;font-weight:600;cursor:pointer}
+.tabs button.active{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.kpis{display:grid;gap:12px;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));margin-bottom:18px}
+.kpi{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:14px}
+.kpi b{display:block;font-size:1.7rem;line-height:1.1}
+.kpi span{color:var(--muted);font-size:.84rem}
+.stack{display:flex;height:14px;border-radius:99px;overflow:hidden;background:var(--gray-soft)}
+.stack i{display:block;height:100%}
+.legend{display:flex;gap:12px;flex-wrap:wrap;font-size:.82rem;margin-top:6px}
+.legend span::before{content:"";display:inline-block;width:10px;height:10px;border-radius:3px;margin-right:5px;background:var(--c)}
+table{width:100%;border-collapse:collapse;font-size:.9rem}
+th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line);vertical-align:middle}
+th{font-size:.78rem;text-transform:uppercase;letter-spacing:.04em;color:var(--muted)}
+.tablewrap{overflow-x:auto}
+@media(max-width:760px){
+  table.stackable thead{display:none}
+  table.stackable,table.stackable tbody,table.stackable tr,table.stackable td{display:block;width:100%}
+  table.stackable tr{background:var(--card);border:1px solid var(--line);border-radius:12px;margin-bottom:10px;padding:6px 10px}
+  table.stackable td{border:0;padding:5px 0;display:flex;justify-content:space-between;gap:12px;text-align:right}
+  table.stackable td::before{content:attr(data-label);font-weight:700;color:var(--muted);text-align:left}
+}
+.modal-bg{position:fixed;inset:0;background:rgba(5,10,20,.55);z-index:60;display:flex;align-items:flex-start;justify-content:center;padding:20px 12px;overflow:auto}
+.modal{background:var(--card);border-radius:18px;max-width:640px;width:100%;padding:20px;box-shadow:var(--shadow);border:1px solid var(--line)}
+.toast-box{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);z-index:80;display:flex;flex-direction:column;gap:8px;width:min(92vw,420px)}
+.toast{background:var(--ink);color:var(--bg);padding:11px 14px;border-radius:12px;font-weight:600;box-shadow:var(--shadow)}
+.toast.err{background:var(--bad);color:#fff}
+.ticket{border:2px dashed var(--accent);border-radius:16px;padding:18px;background:var(--accent-soft)}
+.ticket .id{font:700 1.5rem ui-monospace,Menlo,Consolas,monospace;letter-spacing:.05em}
+.empty{text-align:center;padding:34px 12px;color:var(--muted);border:1px dashed var(--line);border-radius:var(--r)}
+footer{border-top:1px solid var(--line);padding:18px 0 30px;color:var(--muted);font-size:.85rem}
+.kv{display:grid;grid-template-columns:110px 1fr;gap:6px 12px;font-size:.93rem}
+.kv dt{color:var(--muted);font-weight:600}
+.kv dd{margin:0}
+@media(max-width:640px){
+  header.top{position:static}
+  .bar{padding:8px 0;gap:6px}
+  nav.main{margin-left:0;width:100%;flex-wrap:nowrap;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:2px}
+  nav.main a,nav.main button{white-space:nowrap;padding:6px 11px;font-size:.86rem}
+  main{padding-top:14px}
+}
+td .v{display:block}
+@media(max-width:760px){table.stackable td .v{text-align:right;min-width:0;overflow-wrap:anywhere}}
+@media print{
+  header.top,footer,.no-print,.toast-box{display:none!important}
+  body{background:#fff;color:#000}
+}
+</style>
 </head>
 <body>
-  <header class="app">
-    <div class="wrap nav">
-      <div class="brand">
-        <div class="mark">S</div>
-        <div>
-          <h1>StepMath BSc</h1>
-          <small>BSc steps · proofs · Mobile &amp; PC</small>
-        </div>
-      </div>
-      <nav class="nav-links" aria-label="Primary">
-        <button type="button" class="active" data-view="calc">Calculate</button>
-        <button type="button" data-view="prove">Prove</button>
-        <button type="button" data-view="limits">Limits</button>
-      </nav>
-    </div>
-  </header>
+<header class="top">
+  <div class="wrap bar">
+    <a class="brand" href="#/"><span class="logo">F</span><span>FestDesk<small id="orgName">DRMC IT Club</small></span></a>
+    <nav class="main" aria-label="Main">
+      <a href="#/" data-nav="home">Fests &amp; Events</a>
+      <a href="#/my" data-nav="my">My Registrations</a>
+      <a href="#/admin" data-nav="admin">Organizer</a>
+      <button type="button" id="themeBtn" aria-label="Toggle dark mode" title="Toggle dark mode">Theme</button>
+    </nav>
+  </div>
+</header>
+<main class="wrap" id="app" aria-live="polite"></main>
+<footer><div class="wrap">FestDesk &middot; open source (MIT) &middot; demo data is fictional &middot; built for the DRMC International Tech Carnival 2026 AI Web Development Contest</div></footer>
+<div class="toast-box" id="toasts"></div>
+<div id="modalRoot"></div>
 
-  <main class="wrap">
-    <section class="hero">
-      <div>
-        <h2>Exam-style working. Reasons on every line.</h2>
-        <p>
-          StepMath BSc shows the rule behind every line — for exam-style calculation and for short formal proofs.
-          Built for clarity on phones and classroom screens.
-        </p>
-        <div class="trust">
-          <span>BSc modules</span>
-          <span>Step reasons</span>
-          <span>Mobile + PC</span>
-          <span>Honest limits</span>
-        </div>
-        <div class="row">
-          <button class="btn primary" id="btnDemo" type="button">60s demo example</button>
-          <button class="btn ghost" id="btnPrint" type="button">Print-friendly view</button>
-        </div>
-      </div>
-      <aside class="panel">
-        <h3>Judge demo path</h3>
-        <ol style="margin:0;padding-left:1.1rem;color:var(--muted);font-size:.92rem">
-          <li>Open <strong>Calculate</strong> → try quadratic example</li>
-          <li>Read each step’s reason</li>
-          <li>Open <strong>Prove</strong> → Plan + formal lines</li>
-          <li>Open <strong>Limits</strong> — what we claim</li>
-        </ol>
-      </aside>
-    </section>
+<script>
+(function(){
+'use strict';
 
-    <section class="layout">
-      <aside class="side panel" id="sidePanel">
-        <div class="group">
-          <h4>Topics</h4>
-          <div class="chips" id="topicChips"></div>
-        </div>
-        <div class="group">
-          <h4>Examples</h4>
-          <input id="searchEx" type="search" placeholder="Search examples…" style="width:100%;margin-bottom:.5rem;padding:.55rem .7rem;border:1px solid var(--line);border-radius:10px;font:inherit"/>
-          <div class="chips" id="exampleChips"></div>
-        </div>
-      </aside>
+/* ---------- helpers ---------- */
+var KEY='festdesk_db_v1', SESS='festdesk_admin_v1', EMAILKEY='festdesk_email_v1', THEMEKEY='festdesk_theme_v1';
+var ADMIN_USER='admin', ADMIN_PASS='admin123';
+function $(s,r){return (r||document).querySelector(s);}
+function $$(s,r){return Array.prototype.slice.call((r||document).querySelectorAll(s));}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function rid(n){var c='ABCDEFGHJKLMNPQRSTUVWXYZ23456789',s='';for(var i=0;i<n;i++)s+=c[Math.floor(Math.random()*c.length)];return s;}
+function lsGet(k){try{return localStorage.getItem(k);}catch(e){return null;}}
+function lsSet(k,v){try{localStorage.setItem(k,v);}catch(e){}}
+function ssGet(k){try{return sessionStorage.getItem(k);}catch(e){return null;}}
+function ssSet(k,v){try{if(v==null)sessionStorage.removeItem(k);else sessionStorage.setItem(k,v);}catch(e){}}
+function fmt(iso){if(!iso)return '-';var d=new Date(iso);return d.toLocaleString('en-GB',{day:'numeric',month:'short',year:'numeric',hour:'numeric',minute:'2-digit'});}
+function fmtDay(iso){if(!iso)return '-';return new Date(iso).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});}
+function toLocalInput(iso){var d=new Date(iso);if(isNaN(d))return '';function p(n){return String(n).padStart(2,'0');}return d.getFullYear()+'-'+p(d.getMonth()+1)+'-'+p(d.getDate())+'T'+p(d.getHours())+':'+p(d.getMinutes());}
+function fromLocalInput(v){var d=new Date(v);return isNaN(d)?null:d.toISOString();}
+function toast(msg,isErr){var b=$('#toasts');var t=document.createElement('div');t.className='toast'+(isErr?' err':'');t.textContent=msg;b.appendChild(t);setTimeout(function(){t.remove();},3600);}
 
-      <section>
-        <!-- CALCULATE -->
-        <div id="view-calc">
-          <div class="panel">
-            <h3>Problem</h3>
-            <label class="hint" for="inputCalc">Enter a BSc-style problem (or pick an example)</label>
-            <textarea id="inputCalc" placeholder="Example: Solve x^2 - 5x + 6 = 0"></textarea>
-            <div class="row">
-              <button class="btn primary" id="btnSolve" type="button">Solve with steps</button>
-              <button class="btn" id="btnCopy" type="button">Copy solution</button>
-              <button class="btn ghost" id="btnClear" type="button">Clear</button>
-            </div>
-            <p class="hint">Tip: works best for equations and expressions in the supported list. Examples always produce full working.</p>
-          </div>
-          <div class="solution" id="calcOut"></div>
-        </div>
-
-        <!-- PROVE -->
-        <div id="view-prove" class="hidden">
-          <div class="panel">
-            <h3>Proof Center</h3>
-            <p class="hint" style="margin-top:0">Understand first (plan), then formal write-up. BSc-level proofs only.</p>
-            <label class="hint" for="proofMode">Mode</label>
-            <select id="proofMode" style="min-height:auto;margin-bottom:.75rem">
-              <option value="both">Both — Plan + Formal (recommended)</option>
-              <option value="understand">Understand only</option>
-              <option value="formal">Formal only</option>
-            </select>
-            <label class="hint" for="inputProve">Statement to prove</label>
-            <textarea id="inputProve" placeholder="Example: Prove that (a+b)² = a² + 2ab + b²"></textarea>
-            <div class="row">
-              <button class="btn primary" id="btnProve" type="button">Show proof</button>
-              <button class="btn" id="btnCopyProve" type="button">Copy proof</button>
-            </div>
-          </div>
-          <div class="solution" id="proveOut"></div>
-        </div>
-
-        <!-- LIMITS -->
-        <div id="view-limits" class="hidden">
-          <div class="panel">
-            <h3>Limits &amp; honesty</h3>
-            <p>StepMath BSc is a <strong>syllabus-focused trainer</strong>, not a claim that every possible problem is solved.</p>
-            <h4>Supported BSc modules in this build</h4>
-            <ul class="limits">
-              <li>Calculus (chain/product/quotient, parts, partial fractions), linear algebra (det, inverse, Gaussian, eigenvalues), DE, series, Bayes, induction & classical proofs</li>
-              <li>Expand / simplify patterns for common binomials</li>
-              <li>Derivative power rule examples</li>
-              <li>Standard algebraic identity proofs with plan + formal lines</li>
-              <li>Curated example bank (calculation + proof)</li>
-            </ul>
-            <h4>Not claimed</h4>
-            <ul class="limits">
-              <li>Arbitrary word problems without structure</li>
-              <li>University real-analysis ε–δ proofs</li>
-              <li>Abstract algebra or topology</li>
-            </ul>
-            <div class="badge-note">
-              Design principle: if a step cannot be justified reliably, the app should say so rather than invent working.
-            </div>
-          </div>
-        </div>
-      </section>
-    </section>
-  </main>
-
-  <footer>
-    <div class="wrap">
-      StepMath BSc · Built for clarity in exam-style mathematics · Every calculation justified · Proofs explained before they are formalized
-    </div>
-  </footer>
-  <div class="toast" id="toast" role="status"></div>
-
-  <script>
-(function () {
-  const $ = (s, el = document) => el.querySelector(s);
-  const $$ = (s, el = document) => [...el.querySelectorAll(s)];
-
-  const TOPICS = [
-    { id: 'calculus', label: 'Calculus' },
-    { id: 'linalg', label: 'Lin. Algebra' },
-    { id: 'de', label: 'Diff. Eq.' },
-    { id: 'algebra', label: 'Algebra' },
-    { id: 'series', label: 'Series' },
-    { id: 'stats', label: 'Probability' },
-    { id: 'proof', label: 'Proofs' }
+/* ---------- seed data (generated relative to first visit so dates are always current) ---------- */
+function mulberry(a){return function(){a|=0;a=a+0x6D2B79F5|0;var t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+function seed(){
+  var rnd=mulberry(20261009), now=new Date();
+  function at(days,h,m){var d=new Date(now);d.setDate(d.getDate()+days);d.setHours(h,m||0,0,0);return d.toISOString();}
+  function pick(a){return a[Math.floor(rnd()*a.length)];}
+  var db={version:1,org:{name:'DRMC IT Club'},fests:[],events:[],regs:[]};
+  db.fests=[
+    {id:'f-tech',name:'Tech Carnival 2026',desc:'The flagship annual tech fest of DRMC IT Club: contests, robotics and gaming across two days.',venue:'DRMC Auditorium & Labs',start:at(21,9),end:at(22,18)},
+    {id:'f-winter',name:'Winter Tech Fest 2026',desc:'A cosy winter edition focused on hackathons, hands-on workshops and quizzes.',venue:'DRMC Seminar Hall',start:at(75,10),end:at(76,17)},
+    {id:'f-fresh',name:'Freshers Tech Fest 2027',desc:'A welcome event for new students: friendly coding challenges and an intro AI workshop.',venue:'DRMC Computer Lab 2',start:at(140,10),end:at(140,16)}
   ];
+  db.events=[
+    {id:'e-ai',festId:'f-tech',title:'AI Web Development Contest',category:'Contest',desc:'Build a complete working web app in a fixed time using any AI tools you like. Judged on features, UX, responsiveness and creativity. Teams of 1 to 3.',start:at(21,10),venue:'Computer Lab 1',deadline:at(14,23,59),capacity:60,approval:'auto',info:'Free entry. Bring a laptop. Submit a public GitHub repo and a live link.'},
+    {id:'e-prog',festId:'f-tech',title:'Programming Contest',category:'Contest',desc:'ACM-style individual contest with 8 problems of rising difficulty. C, C++, Java and Python are supported.',start:at(21,14),venue:'Computer Lab 2',deadline:at(15,23,59),capacity:80,approval:'auto',info:'Free entry. Individual participation only. Practice set is shared after registration.'},
+    {id:'e-robo',festId:'f-tech',title:'Robotics Challenge',category:'Robotics',desc:'Line-following and obstacle-avoidance race for student-built robots. Inspection happens one hour before the start.',start:at(22,10),venue:'Open Courtyard',deadline:at(12,23,59),capacity:24,approval:'manual',info:'Team of 2 to 4. Registration is confirmed after the organizers review your robot spec.'},
+    {id:'e-game',festId:'f-tech',title:'Gaming Tournament',category:'Gaming',desc:'1v1 knockout bracket on PC. Fair play rules apply and the bracket is published a day before the event.',start:at(22,14),venue:'Multimedia Room',deadline:at(10,23,59),capacity:20,approval:'auto',info:'Free entry. Bring your own peripherals if you prefer them.'},
+    {id:'e-quizq',festId:'f-tech',title:'Tech Quiz Qualifier',category:'Quiz',desc:'Online qualifier for the Tech Quiz final. 30 questions, 20 minutes.',start:at(16,18),venue:'Online',deadline:at(-1,23,59),capacity:100,approval:'auto',info:'Registration for this qualifier has already closed.'},
+    {id:'e-hack',festId:'f-winter',title:'24-Hour Hackathon',category:'Hackathon',desc:'Build something useful for campus life in 24 hours. Mentors on site, food provided.',start:at(75,10),venue:'DRMC Seminar Hall',deadline:at(60,23,59),capacity:50,approval:'manual',info:'Teams of 3 to 4. Organizers confirm teams based on the idea summary.'},
+    {id:'e-sec',festId:'f-winter',title:'Intro to Web Security Workshop',category:'Workshop',desc:'Hands-on workshop on the OWASP Top 10 using deliberately vulnerable practice apps in a safe lab.',start:at(76,11),venue:'Computer Lab 1',deadline:at(68,23,59),capacity:40,approval:'auto',info:'Bring a laptop with a modern browser. No prior experience needed.'},
+    {id:'e-quiz',festId:'f-winter',title:'Tech Quiz Final',category:'Quiz',desc:'Buzzer-round quiz on computing history, current tech and logic puzzles.',start:at(76,15),venue:'DRMC Seminar Hall',deadline:at(70,23,59),capacity:100,approval:'auto',info:'Teams of 2. Qualifier winners get seeded slots.'},
+    {id:'e-code',festId:'f-fresh',title:'Beginner Coding Challenge',category:'Contest',desc:'Friendly problem-solving contest for first-year students. Simple problems and lots of prizes.',start:at(140,10),venue:'Computer Lab 2',deadline:at(130,23,59),capacity:60,approval:'auto',info:'Open to first-year students only.'},
+    {id:'e-aiw',festId:'f-fresh',title:'AI Tools Workshop',category:'Workshop',desc:'Learn how to use AI assistants responsibly for study and projects. Includes prompt-writing practice.',start:at(140,13),venue:'Computer Lab 2',deadline:at(132,23,59),capacity:40,approval:'auto',info:'Bring a laptop. Free accounts on public AI tools are enough.'}
+  ];
+  var first=['Rahim','Karim','Nusrat','Tasnia','Arif','Sabbir','Mim','Farhan','Jannat','Rakib','Sumaiya','Tanvir','Maliha','Imran','Nabila','Shakib','Ritu','Hasan','Lamia','Fahim','Anika','Shihab','Priya','Zubair','Tahmina','Asif','Sadia','Mahin','Orpa','Rafi'];
+  var last=['Ahmed','Hossain','Islam','Khan','Rahman','Chowdhury','Akter','Uddin','Sarker','Mia','Das','Biswas','Karim','Sheikh','Talukder'];
+  var inst=['DRMC','Dhaka College','Notre Dame College','Viqarunnisa Noon School & College','Dhaka University','BUET','NSU','Jahangirnagar University'];
+  var counts={'e-ai':41,'e-prog':56,'e-robo':17,'e-game':20,'e-quizq':63,'e-hack':22,'e-sec':27,'e-quiz':31,'e-code':18,'e-aiw':12};
+  var n=0;
+  db.events.forEach(function(ev){
+    var active=counts[ev.id]||10, extras=ev.capacity>=40?3:1, total=active+extras, k;
+    for(k=0;k<total;k++){
+      var f=pick(first), l=pick(last), st;
+      if(k>=active) st=(k%2?'cancelled':'rejected');
+      else if(ev.approval==='manual') st=(rnd()<.55?'confirmed':'pending');
+      else st=(rnd()<.9?'confirmed':'pending');
+      n++;
+      db.regs.push({
+        id:'REG-'+(1000+n),
+        eventId:ev.id,
+        name:f+' '+l,
+        email:(f+'.'+l+n+'@example.com').toLowerCase(),
+        phone:'01'+pick(['3','5','6','7','8','9'])+String(Math.floor(rnd()*90000000+10000000)),
+        inst:pick(inst),
+        notes:'',
+        status:st,
+        createdAt:at(-Math.floor(rnd()*9)-1,Math.floor(rnd()*12)+9,Math.floor(rnd()*60))
+      });
+    }
+  });
+  return db;
+}
+function load(){
+  var raw=lsGet(KEY);
+  if(raw){try{var d=JSON.parse(raw);if(d&&d.fests&&d.events&&d.regs)return d;}catch(e){}}
+  var s=seed();lsSet(KEY,JSON.stringify(s));return s;
+}
+var db=load();
+function save(){lsSet(KEY,JSON.stringify(db));}
 
-  /** @type {Array<{id:string,topic:string,title:string,prompt:string,kind:'calc'|'proof', solve: Function}>} */
-  const EXAMPLES = [];
+/* ---------- domain ---------- */
+function fest(id){return db.fests.filter(function(f){return f.id===id;})[0];}
+function event(id){return db.events.filter(function(e){return e.id===id;})[0];}
+function regsOf(eid){return db.regs.filter(function(r){return r.eventId===eid;});}
+function isActive(r){return r.status==='pending'||r.status==='confirmed';}
+function taken(eid){return regsOf(eid).filter(isActive).length;}
+function seatsLeft(ev){return Math.max(0,ev.capacity-taken(ev.id));}
+function state(ev){
+  var now=new Date();
+  if(new Date(ev.deadline)<now)return {open:false,code:'closed',label:'Registration closed',reason:'The registration deadline for this event has passed.'};
+  if(seatsLeft(ev)<=0)return {open:false,code:'full',label:'Full',reason:'This event has reached its capacity.'};
+  if(seatsLeft(ev)<=Math.max(3,Math.ceil(ev.capacity*.15)))return {open:true,code:'few',label:'Few seats left',reason:''};
+  return {open:true,code:'open',label:'Open',reason:''};
+}
+function badgeFor(ev){var s=state(ev);var cls=s.code==='open'?'ok':s.code==='few'?'warn':'bad';return '<span class="badge '+cls+'">'+esc(s.label)+'</span>';}
+function statusBadge(st){var m={confirmed:'ok',pending:'warn',rejected:'bad',cancelled:''};return '<span class="badge '+(m[st]||'')+'">'+esc(st)+'</span>';}
+function bar(ev){var t=taken(ev.id),pct=Math.min(100,Math.round(t/ev.capacity*100));var c=pct>=100?'full':pct>=80?'mid':'';return '<div class="progress '+c+'" role="progressbar" aria-valuemin="0" aria-valuemax="'+ev.capacity+'" aria-valuenow="'+t+'" aria-label="Seats taken"><i style="width:'+pct+'%"></i></div><div class="small muted">'+t+' / '+ev.capacity+' seats taken</div>';}
+function categories(){var s={};db.events.forEach(function(e){s[e.category]=1;});return Object.keys(s).sort();}
+function validEmail(e){return /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(e);}
+function validPhone(p){var d=p.replace(/[\s\-+()]/g,'');return /^\d{7,15}$/.test(d);}
 
-  function solCalc(title, given, goal, steps, answer, topic) {
-    return {
-      kind: 'calc', title, topic, given, goal, steps, answer
-    };
+function register(ev,d){
+  var s=state(ev);if(!s.open)return {ok:false,errors:{_:s.reason}};
+  var errors={},name=(d.name||'').trim(),email=(d.email||'').trim().toLowerCase(),phone=(d.phone||'').trim(),inst=(d.inst||'').trim();
+  if(name.length<2)errors.name='Please enter your full name.';
+  if(!validEmail(email))errors.email='Enter a valid email address.';
+  if(!validPhone(phone))errors.phone='Enter a valid phone number (7-15 digits).';
+  if(inst.length<2)errors.inst='Enter your institution or class.';
+  if(!errors.email&&regsOf(ev.id).some(function(r){return r.email===email&&isActive(r);}))errors.email='This email is already registered for this event.';
+  if(Object.keys(errors).length)return {ok:false,errors:errors};
+  var reg={id:'REG-'+rid(5),eventId:ev.id,name:name,email:email,phone:phone,inst:inst,notes:(d.notes||'').trim(),status:ev.approval==='manual'?'pending':'confirmed',createdAt:new Date().toISOString()};
+  db.regs.push(reg);save();lsSet(EMAILKEY,email);
+  return {ok:true,reg:reg};
+}
+
+/* ---------- UI state ---------- */
+var ui={q:'',cat:'',fest:'',openOnly:false,adminTab:'overview',pq:'',pst:'',pev:'',lastReg:null,myEmail:lsGet(EMAILKEY)||'',myChecked:false};
+function isAdmin(){return ssGet(SESS)==='1';}
+
+/* ---------- views ---------- */
+function eventCard(ev){
+  var f=fest(ev.festId);
+  return '<a class="card link" href="#/event/'+esc(ev.id)+'" data-testid="event-card">'+
+    '<div class="row between"><span class="badge acc">'+esc(ev.category)+'</span>'+badgeFor(ev)+'</div>'+
+    '<h3 style="margin-top:8px">'+esc(ev.title)+'</h3>'+
+    '<div class="meta"><span>'+esc(f?f.name:'')+'</span><span>'+esc(fmt(ev.start))+' &middot; '+esc(ev.venue)+'</span><span>Deadline: '+esc(fmt(ev.deadline))+'</span></div>'+
+    bar(ev)+'</a>';
+}
+function listEvents(){
+  var q=ui.q.trim().toLowerCase();
+  return db.events.filter(function(e){
+    if(ui.cat&&e.category!==ui.cat)return false;
+    if(ui.fest&&e.festId!==ui.fest)return false;
+    if(ui.openOnly&&!state(e).open)return false;
+    if(q){var f=fest(e.festId);var hay=(e.title+' '+e.desc+' '+e.category+' '+e.venue+' '+(f?f.name:'')).toLowerCase();if(hay.indexOf(q)<0)return false;}
+    return true;
+  }).sort(function(a,b){return new Date(a.start)-new Date(b.start);});
+}
+function resultsHtml(){
+  var list=listEvents();
+  if(!list.length)return '<div class="empty">No events match your search. Try clearing the filters.</div>';
+  return '<p class="muted small" data-testid="count">'+list.length+' event'+(list.length===1?'':'s')+' found</p><div class="grid">'+list.map(eventCard).join('')+'</div>';
+}
+function viewHome(){
+  var fests=db.fests.slice().sort(function(a,b){return new Date(a.start)-new Date(b.start);});
+  var totalReg=db.regs.filter(isActive).length;
+  var catOpts='<option value="">All categories</option>'+categories().map(function(c){return '<option'+(ui.cat===c?' selected':'')+'>'+esc(c)+'</option>';}).join('');
+  var festOpts='<option value="">All fests</option>'+db.fests.map(function(f){return '<option value="'+esc(f.id)+'"'+(ui.fest===f.id?' selected':'')+'>'+esc(f.name)+'</option>';}).join('');
+  return '<section class="hero"><h1>Register for '+esc(db.org.name)+' events, without Google Forms</h1>'+
+    '<p>Browse fests, open an event, see the deadline and seats left, and register in under a minute. Manage or cancel your registration any time.</p>'+
+    '<div class="stats"><span class="chip">'+db.fests.length+' fests</span><span class="chip">'+db.events.length+' events</span><span class="chip">'+totalReg+' active registrations</span></div></section>'+
+    '<section><h2>Fests</h2><div class="grid">'+fests.map(function(f){
+      var evs=db.events.filter(function(e){return e.festId===f.id;});
+      var open=evs.filter(function(e){return state(e).open;}).length;
+      return '<a class="card link" href="#/fest/'+esc(f.id)+'" data-testid="fest-card"><div class="row between"><span class="badge acc">'+evs.length+' events</span><span class="badge '+(open?'ok':'')+'">'+open+' open</span></div><h3 style="margin-top:8px">'+esc(f.name)+'</h3><div class="meta"><span>'+esc(fmtDay(f.start))+(fmtDay(f.end)!==fmtDay(f.start)?' to '+esc(fmtDay(f.end)):'')+'</span><span>'+esc(f.venue)+'</span></div><p class="muted small">'+esc(f.desc)+'</p></a>';
+    }).join('')+'</div></section>'+
+    '<section class="section"><h2>All events</h2>'+
+    '<div class="filters"><div class="grow"><label for="q">Search events</label><input id="q" type="search" placeholder="Search by title, venue, category..." value="'+esc(ui.q)+'" autocomplete="off"></div>'+
+    '<div><label for="cat">Category</label><select id="cat">'+catOpts+'</select></div>'+
+    '<div><label for="festf">Fest</label><select id="festf">'+festOpts+'</select></div>'+
+    '<div><label for="openonly"><input type="checkbox" id="openonly"'+(ui.openOnly?' checked':'')+'> Open only</label></div></div>'+
+    '<div id="results">'+resultsHtml()+'</div></section>';
+}
+function viewFest(id){
+  var f=fest(id);if(!f)return notFound();
+  var evs=db.events.filter(function(e){return e.festId===id;}).sort(function(a,b){return new Date(a.start)-new Date(b.start);});
+  return '<div class="crumbs"><a href="#/">Fests</a> / '+esc(f.name)+'</div>'+
+    '<section class="hero"><h1>'+esc(f.name)+'</h1><p>'+esc(f.desc)+'</p><div class="stats"><span class="chip">'+esc(fmtDay(f.start))+(fmtDay(f.end)!==fmtDay(f.start)?' to '+esc(fmtDay(f.end)):'')+'</span><span class="chip">'+esc(f.venue)+'</span><span class="chip">'+evs.length+' events</span></div></section>'+
+    '<h2>Events in this fest</h2>'+(evs.length?'<div class="grid">'+evs.map(eventCard).join('')+'</div>':'<div class="empty">No events have been added to this fest yet.</div>');
+}
+function formHtml(ev){
+  var s=state(ev);
+  if(!s.open)return '<div class="card"><h3>Registration</h3><p><span class="badge bad">'+esc(s.label)+'</span></p><p class="muted">'+esc(s.reason)+'</p></div>';
+  return '<form class="card" id="regForm" data-testid="reg-form" novalidate data-event="'+esc(ev.id)+'"><h3>Register for this event</h3>'+
+    '<div class="form-grid"><div class="full"><label for="rname">Full name</label><input id="rname" name="name" autocomplete="name" required><div class="err" data-err="name"></div></div>'+
+    '<div><label for="remail">Email</label><input id="remail" name="email" type="email" autocomplete="email" value="'+esc(ui.myEmail)+'" required><div class="err" data-err="email"></div></div>'+
+    '<div><label for="rphone">Phone</label><input id="rphone" name="phone" type="tel" autocomplete="tel" required><div class="err" data-err="phone"></div></div>'+
+    '<div class="full"><label for="rinst">Institution / class</label><input id="rinst" name="inst" required><div class="err" data-err="inst"></div></div>'+
+    '<div class="full"><label for="rnotes">Notes (team members, requirements) - optional</label><textarea id="rnotes" name="notes"></textarea></div></div>'+
+    '<div class="err" data-err="_"></div>'+
+    '<button class="btn" type="submit" style="margin-top:10px;width:100%">Submit registration</button>'+
+    '<p class="muted small" style="margin-top:8px">'+(ev.approval==='manual'?'This event needs organizer approval. You will see your status under My Registrations.':'Your seat is confirmed instantly.')+'</p></form>';
+}
+function ticketHtml(reg,ev){
+  var f=fest(ev.festId);
+  return '<div class="ticket" data-testid="confirmation"><div class="row between"><h3 style="margin:0">'+(reg.status==='confirmed'?'Registration confirmed':'Registration received')+'</h3>'+statusBadge(reg.status)+'</div>'+
+    '<p class="muted">'+(reg.status==='confirmed'?'You are in. Show this ID at the venue.':'The organizers will review and update your status.')+'</p>'+
+    '<div class="id" data-testid="reg-id">'+esc(reg.id)+'</div>'+
+    '<dl class="kv" style="margin-top:12px"><dt>Name</dt><dd>'+esc(reg.name)+'</dd><dt>Event</dt><dd>'+esc(ev.title)+'</dd><dt>Fest</dt><dd>'+esc(f?f.name:'')+'</dd><dt>When</dt><dd>'+esc(fmt(ev.start))+'</dd><dt>Venue</dt><dd>'+esc(ev.venue)+'</dd><dt>Email</dt><dd>'+esc(reg.email)+'</dd></dl>'+
+    '<div class="row no-print" style="margin-top:14px"><button class="btn ghost sm" data-act="print" type="button">Print ticket</button><a class="btn sm" href="#/my">View my registrations</a></div></div>';
+}
+function viewEvent(id){
+  var ev=event(id);if(!ev)return notFound();
+  var f=fest(ev.festId),s=state(ev);
+  var right=(ui.lastReg&&ui.lastReg.eventId===ev.id)?ticketHtml(ui.lastReg,ev):formHtml(ev);
+  return '<div class="crumbs"><a href="#/">Fests</a> / <a href="#/fest/'+esc(ev.festId)+'">'+esc(f?f.name:'')+'</a> / '+esc(ev.title)+'</div>'+
+    '<div class="two"><section class="card"><div class="row between"><span class="badge acc">'+esc(ev.category)+'</span>'+badgeFor(ev)+'</div>'+
+    '<h1 style="margin-top:10px" data-testid="event-title">'+esc(ev.title)+'</h1><p>'+esc(ev.desc)+'</p>'+
+    '<dl class="kv"><dt>Date &amp; time</dt><dd>'+esc(fmt(ev.start))+'</dd><dt>Venue</dt><dd>'+esc(ev.venue)+'</dd><dt>Deadline</dt><dd data-testid="deadline">'+esc(fmt(ev.deadline))+'</dd><dt>Capacity</dt><dd>'+ev.capacity+' seats ('+seatsLeft(ev)+' left)</dd><dt>Approval</dt><dd>'+(ev.approval==='manual'?'Organizer approval required':'Instant confirmation')+'</dd></dl>'+
+    bar(ev)+'<h3 style="margin-top:14px">Registration information</h3><p class="muted">'+esc(ev.info)+'</p></section>'+
+    '<div>'+right+'</div></div>';
+}
+function viewMy(){
+  var email=ui.myEmail.trim().toLowerCase();
+  var out='<h1>My Registrations</h1><p class="muted">Enter the email you registered with to view, edit or cancel your registrations.</p>'+
+    '<form class="card" id="myForm" style="margin-bottom:16px" novalidate><div class="row" style="align-items:flex-end"><div style="flex:1;min-width:220px"><label for="myemail">Email</label><input id="myemail" type="email" value="'+esc(ui.myEmail)+'" autocomplete="email"></div><button class="btn" type="submit">Find my registrations</button></div></form>';
+  if(ui.myChecked||email){
+    var mine=db.regs.filter(function(r){return r.email===email;}).sort(function(a,b){return new Date(b.createdAt)-new Date(a.createdAt);});
+    if(!email||!validEmail(email))out+='<div class="empty">Enter a valid email address.</div>';
+    else if(!mine.length)out+='<div class="empty" data-testid="my-empty">No registrations found for '+esc(email)+'.</div>';
+    else out+='<div class="grid" data-testid="my-list">'+mine.map(function(r){
+      var ev=event(r.eventId);if(!ev)return '';
+      var canCancel=isActive(r)&&new Date(ev.start)>new Date();
+      return '<div class="card"><div class="row between">'+statusBadge(r.status)+'<span class="muted small">'+esc(r.id)+'</span></div><h3 style="margin-top:8px"><a href="#/event/'+esc(ev.id)+'" style="color:inherit">'+esc(ev.title)+'</a></h3>'+
+        '<div class="meta"><span>'+esc(fmt(ev.start))+' &middot; '+esc(ev.venue)+'</span><span>Registered '+esc(fmt(r.createdAt))+'</span><span>'+esc(r.name)+' &middot; '+esc(r.phone)+'</span></div>'+
+        '<div class="row">'+(isActive(r)?'<button class="btn ghost sm" data-act="edit-my" data-id="'+esc(r.id)+'">Edit details</button>':'')+(canCancel?'<button class="btn danger ghost sm" data-act="cancel-my" data-id="'+esc(r.id)+'">Cancel</button>':'')+'</div></div>';
+    }).join('')+'</div>';
   }
+  return out;
+}
+function notFound(){return '<div class="empty"><h2>Not found</h2><p>That page does not exist.</p><a class="btn" href="#/">Back to events</a></div>';}
 
-  // ---- Example bank (curated, competition-safe) ----
-  EXAMPLES.push({
-    id: 'quad1', topic: 'algebra', kind: 'calc', title: 'Quadratic equation',
-    prompt: 'Solve x^2 - 5x + 6 = 0',
-    solve: () => solCalc(
-      'Quadratic equation',
-      'x² − 5x + 6 = 0',
-      'Find real values of x',
-      [
-        { work: 'x² − 5x + 6 = 0', why: 'Given equation' },
-        { work: 'Look for two numbers that multiply to 6 and add to −5: −2 and −3', why: 'Factoring a monic quadratic' },
-        { work: '(x − 2)(x − 3) = 0', why: 'Factorisation' },
-        { work: 'x − 2 = 0  or  x − 3 = 0', why: 'Zero product property' },
-        { work: 'x = 2  or  x = 3', why: 'Solve linear factors' }
-      ],
-      'x = 2 or x = 3',
-      'algebra'
-    )
-  });
+/* ---------- admin ---------- */
+function viewAdminLogin(){
+  return '<div style="max-width:420px;margin:30px auto"><form class="card" id="loginForm" novalidate><h2>Organizer login</h2><p class="muted small">Demo credentials: <b>admin</b> / <b>admin123</b></p>'+
+    '<label for="lu">Username</label><input id="lu" autocomplete="username" value="admin"><label for="lp" style="margin-top:10px">Password</label><input id="lp" type="password" autocomplete="current-password"><div class="err" id="lerr"></div>'+
+    '<button class="btn" style="width:100%;margin-top:12px" type="submit">Sign in</button></form></div>';
+}
+function statsFor(){
+  var c={confirmed:0,pending:0,rejected:0,cancelled:0};db.regs.forEach(function(r){c[r.status]=(c[r.status]||0)+1;});return c;
+}
+function stackBar(c,total){
+  var cols={confirmed:'var(--ok)',pending:'var(--warn)',rejected:'var(--bad)',cancelled:'var(--muted)'};
+  if(!total)return '';
+  return '<div class="stack" role="img" aria-label="Registration status breakdown">'+Object.keys(cols).map(function(k){return '<i style="width:'+(c[k]/total*100)+'%;background:'+cols[k]+'"></i>';}).join('')+'</div><div class="legend">'+Object.keys(cols).map(function(k){return '<span style="--c:'+cols[k]+'">'+k+' '+c[k]+'</span>';}).join('')+'</div>';
+}
+function adminOverview(){
+  var c=statsFor(),total=db.regs.length;
+  var rows=db.events.slice().sort(function(a,b){return new Date(a.start)-new Date(b.start);}).map(function(ev){
+    var cc={confirmed:0,pending:0,rejected:0,cancelled:0};regsOf(ev.id).forEach(function(r){cc[r.status]++;});
+    return '<tr><td data-label="Event">'+esc(ev.title)+'</td><td data-label="Fest">'+esc((fest(ev.festId)||{}).name||'')+'</td><td data-label="Seats">'+taken(ev.id)+' / '+ev.capacity+'</td><td data-label="Confirmed">'+cc.confirmed+'</td><td data-label="Pending">'+cc.pending+'</td><td data-label="Status">'+badgeFor(ev)+'</td><td data-label="Fill">'+bar(ev)+'</td></tr>';
+  }).join('');
+  return '<div class="kpis"><div class="kpi"><b>'+db.fests.length+'</b><span>Fests</span></div><div class="kpi"><b>'+db.events.length+'</b><span>Events</span></div><div class="kpi"><b data-testid="kpi-total">'+total+'</b><span>Total registrations</span></div><div class="kpi"><b>'+c.confirmed+'</b><span>Confirmed</span></div><div class="kpi"><b>'+c.pending+'</b><span>Pending review</span></div><div class="kpi"><b>'+db.events.filter(function(e){return !state(e).open;}).length+'</b><span>Closed / full events</span></div></div>'+
+    '<div class="card" style="margin-bottom:16px"><h3>Registration status</h3>'+stackBar(c,total)+'</div>'+
+    '<div class="card"><h3>Events overview</h3><div class="tablewrap"><table class="stackable"><thead><tr><th>Event</th><th>Fest</th><th>Seats</th><th>Confirmed</th><th>Pending</th><th>State</th><th style="min-width:160px">Fill</th></tr></thead><tbody>'+rows+'</tbody></table></div></div>';
+}
+function adminManage(){
+  var f=db.fests.map(function(x){
+    return '<tr><td data-label="Fest">'+esc(x.name)+'</td><td data-label="Dates">'+esc(fmtDay(x.start))+'</td><td data-label="Events">'+db.events.filter(function(e){return e.festId===x.id;}).length+'</td><td data-label="Actions"><div class="row"><button class="btn ghost sm" data-act="edit-fest" data-id="'+esc(x.id)+'">Edit</button><button class="btn danger ghost sm" data-act="del-fest" data-id="'+esc(x.id)+'">Delete</button></div></td></tr>';
+  }).join('');
+  var e=db.events.map(function(x){
+    return '<tr><td data-label="Event">'+esc(x.title)+'</td><td data-label="Fest">'+esc((fest(x.festId)||{}).name||'')+'</td><td data-label="Category">'+esc(x.category)+'</td><td data-label="Seats">'+taken(x.id)+' / '+x.capacity+'</td><td data-label="Deadline">'+esc(fmtDay(x.deadline))+'</td><td data-label="Actions"><div class="row"><button class="btn ghost sm" data-act="edit-event" data-id="'+esc(x.id)+'">Edit</button><button class="btn danger ghost sm" data-act="del-event" data-id="'+esc(x.id)+'">Delete</button></div></td></tr>';
+  }).join('');
+  return '<div class="card" style="margin-bottom:16px"><div class="row between"><h3 style="margin:0">Fests</h3><button class="btn sm" data-act="new-fest" data-testid="new-fest">+ New fest</button></div><div class="tablewrap" style="margin-top:10px"><table class="stackable"><thead><tr><th>Fest</th><th>Starts</th><th>Events</th><th></th></tr></thead><tbody>'+f+'</tbody></table></div></div>'+
+    '<div class="card"><div class="row between"><h3 style="margin:0">Events</h3><button class="btn sm" data-act="new-event" data-testid="new-event">+ New event</button></div><div class="tablewrap" style="margin-top:10px"><table class="stackable"><thead><tr><th>Event</th><th>Fest</th><th>Category</th><th>Seats</th><th>Deadline</th><th></th></tr></thead><tbody>'+e+'</tbody></table></div></div>';
+}
+function partList(){
+  var q=ui.pq.trim().toLowerCase();
+  return db.regs.filter(function(r){
+    if(ui.pev&&r.eventId!==ui.pev)return false;
+    if(ui.pst&&r.status!==ui.pst)return false;
+    if(q&&(r.name+' '+r.email+' '+r.phone+' '+r.id+' '+r.inst).toLowerCase().indexOf(q)<0)return false;
+    return true;
+  }).sort(function(a,b){return new Date(b.createdAt)-new Date(a.createdAt);});
+}
+function partTable(){
+  var list=partList();
+  if(!list.length)return '<div class="empty">No participants match these filters.</div>';
+  var shown=list.slice(0,200);
+  var opts=['pending','confirmed','rejected','cancelled'];
+  return '<p class="muted small" data-testid="pcount">'+list.length+' participant'+(list.length===1?'':'s')+(list.length>shown.length?' (showing first 200)':'')+'</p><div class="tablewrap"><table class="stackable"><thead><tr><th>ID</th><th>Name</th><th>Contact</th><th>Event</th><th>Registered</th><th>Status</th><th></th></tr></thead><tbody>'+
+    shown.map(function(r){var ev=event(r.eventId);return '<tr data-testid="prow"><td data-label="ID">'+esc(r.id)+'</td><td data-label="Name"><span class="v">'+esc(r.name)+'<span class="muted small" style="display:block">'+esc(r.inst)+'</span></span></td><td data-label="Contact"><span class="v">'+esc(r.email)+'<span class="muted small" style="display:block">'+esc(r.phone)+'</span></span></td><td data-label="Event">'+esc(ev?ev.title:'(deleted)')+'</td><td data-label="Registered">'+esc(fmtDay(r.createdAt))+'</td><td data-label="Status"><select data-act="setstatus" data-id="'+esc(r.id)+'" aria-label="Status for '+esc(r.name)+'">'+opts.map(function(o){return '<option'+(o===r.status?' selected':'')+'>'+o+'</option>';}).join('')+'</select></td><td data-label=""><button class="btn danger ghost sm" data-act="del-reg" data-id="'+esc(r.id)+'">Remove</button></td></tr>';}).join('')+'</tbody></table></div>';
+}
+function adminParticipants(){
+  var evOpts='<option value="">All events</option>'+db.events.map(function(e){return '<option value="'+esc(e.id)+'"'+(ui.pev===e.id?' selected':'')+'>'+esc(e.title)+'</option>';}).join('');
+  var stOpts='<option value="">All statuses</option>'+['pending','confirmed','rejected','cancelled'].map(function(s){return '<option'+(ui.pst===s?' selected':'')+'>'+s+'</option>';}).join('');
+  return '<div class="filters" style="grid-template-columns:2fr 1.3fr 1fr auto"><div class="grow"><label for="pq">Search participants</label><input id="pq" type="search" placeholder="Name, email, phone, ID..." value="'+esc(ui.pq)+'" autocomplete="off"></div><div><label for="pev">Event</label><select id="pev">'+evOpts+'</select></div><div><label for="pst">Status</label><select id="pst">'+stOpts+'</select></div><div><button class="btn ghost" data-act="csv" type="button">Export CSV</button></div></div><div id="ptable">'+partTable()+'</div>';
+}
+function viewAdmin(){
+  if(!isAdmin())return viewAdminLogin();
+  var tabs=[['overview','Overview'],['participants','Participants'],['manage','Fests & Events']];
+  var body=ui.adminTab==='participants'?adminParticipants():ui.adminTab==='manage'?adminManage():adminOverview();
+  return '<div class="row between" style="margin-bottom:12px"><h1 style="margin:0">Organizer dashboard</h1><div class="row"><button class="btn ghost sm" data-act="reset" type="button">Reset demo data</button><button class="btn ghost sm" data-act="logout" type="button">Sign out</button></div></div>'+
+    '<div class="tabs" role="tablist">'+tabs.map(function(t){return '<button role="tab" data-act="tab" data-tab="'+t[0]+'" class="'+(ui.adminTab===t[0]?'active':'')+'" aria-selected="'+(ui.adminTab===t[0])+'">'+t[1]+'</button>';}).join('')+'</div>'+body;
+}
 
-  EXAMPLES.push({
-    id: 'lin1', topic: 'algebra', kind: 'calc', title: 'Linear equation',
-    prompt: 'Solve 3x - 7 = 11',
-    solve: () => solCalc(
-      'Linear equation',
-      '3x − 7 = 11',
-      'Find x',
-      [
-        { work: '3x − 7 = 11', why: 'Given' },
-        { work: '3x − 7 + 7 = 11 + 7', why: 'Add 7 to both sides (addition property of equality)' },
-        { work: '3x = 18', why: 'Simplify' },
-        { work: 'x = 18 / 3', why: 'Divide both sides by 3' },
-        { work: 'x = 6', why: 'Simplify' }
-      ],
-      'x = 6',
-      'algebra'
-    )
-  });
+/* ---------- modal forms ---------- */
+function openModal(html){$('#modalRoot').innerHTML='<div class="modal-bg" data-act="modal-bg"><div class="modal" role="dialog" aria-modal="true">'+html+'</div></div>';var f=$('#modalRoot input,#modalRoot select,#modalRoot textarea');if(f)f.focus();}
+function closeModal(){$('#modalRoot').innerHTML='';}
+function festForm(f){
+  f=f||{};
+  return '<form id="festForm" data-id="'+esc(f.id||'')+'" novalidate><h2>'+(f.id?'Edit fest':'New fest')+'</h2><div class="form-grid">'+
+    '<div class="full"><label for="fn">Fest name</label><input id="fn" name="name" value="'+esc(f.name)+'"><div class="err" data-err="name"></div></div>'+
+    '<div class="full"><label for="fd">Description</label><textarea id="fd" name="desc">'+esc(f.desc)+'</textarea></div>'+
+    '<div class="full"><label for="fv">Venue</label><input id="fv" name="venue" value="'+esc(f.venue)+'"></div>'+
+    '<div><label for="fs">Starts</label><input id="fs" type="datetime-local" name="start" value="'+esc(f.start?toLocalInput(f.start):'')+'"><div class="err" data-err="start"></div></div>'+
+    '<div><label for="fe">Ends</label><input id="fe" type="datetime-local" name="end" value="'+esc(f.end?toLocalInput(f.end):'')+'"><div class="err" data-err="end"></div></div></div>'+
+    '<div class="row" style="margin-top:14px"><button class="btn" type="submit">Save fest</button><button class="btn ghost" type="button" data-act="close">Cancel</button></div></form>';
+}
+function eventForm(e){
+  e=e||{};
+  var fo=db.fests.map(function(f){return '<option value="'+esc(f.id)+'"'+(e.festId===f.id?' selected':'')+'>'+esc(f.name)+'</option>';}).join('');
+  var cats=['Contest','Workshop','Hackathon','Robotics','Gaming','Quiz','Seminar','Other'];
+  var catOpts=cats.map(function(c){return '<option'+(e.category===c?' selected':'')+'>'+c+'</option>';}).join('');
+  return '<form id="eventForm" data-id="'+esc(e.id||'')+'" novalidate><h2>'+(e.id?'Edit event':'New event')+'</h2><div class="form-grid">'+
+    '<div class="full"><label for="et">Title</label><input id="et" name="title" value="'+esc(e.title)+'"><div class="err" data-err="title"></div></div>'+
+    '<div><label for="ef">Fest</label><select id="ef" name="festId">'+fo+'</select></div>'+
+    '<div><label for="ec">Category</label><select id="ec" name="category">'+catOpts+'</select></div>'+
+    '<div class="full"><label for="ed">Description</label><textarea id="ed" name="desc">'+esc(e.desc)+'</textarea></div>'+
+    '<div><label for="es">Starts</label><input id="es" type="datetime-local" name="start" value="'+esc(e.start?toLocalInput(e.start):'')+'"><div class="err" data-err="start"></div></div>'+
+    '<div><label for="ev">Venue</label><input id="ev" name="venue" value="'+esc(e.venue)+'"></div>'+
+    '<div><label for="edl">Registration deadline</label><input id="edl" type="datetime-local" name="deadline" value="'+esc(e.deadline?toLocalInput(e.deadline):'')+'"><div class="err" data-err="deadline"></div></div>'+
+    '<div><label for="ecap">Capacity</label><input id="ecap" type="number" min="1" name="capacity" value="'+esc(e.capacity||50)+'"><div class="err" data-err="capacity"></div></div>'+
+    '<div class="full"><label for="eap">Approval</label><select id="eap" name="approval"><option value="auto"'+(e.approval!=='manual'?' selected':'')+'>Instant confirmation</option><option value="manual"'+(e.approval==='manual'?' selected':'')+'>Organizer approval required</option></select></div>'+
+    '<div class="full"><label for="ei">Registration information</label><textarea id="ei" name="info">'+esc(e.info)+'</textarea></div></div>'+
+    '<div class="err" data-err="_"></div><div class="row" style="margin-top:14px"><button class="btn" type="submit">Save event</button><button class="btn ghost" type="button" data-act="close">Cancel</button></div></form>';
+}
+function myEditForm(r){
+  return '<form id="myEditForm" data-id="'+esc(r.id)+'" novalidate><h2>Edit my details</h2><div class="form-grid"><div class="full"><label for="mn">Full name</label><input id="mn" name="name" value="'+esc(r.name)+'"><div class="err" data-err="name"></div></div><div><label for="mp">Phone</label><input id="mp" name="phone" value="'+esc(r.phone)+'"><div class="err" data-err="phone"></div></div><div><label for="mi">Institution / class</label><input id="mi" name="inst" value="'+esc(r.inst)+'"><div class="err" data-err="inst"></div></div></div><div class="row" style="margin-top:14px"><button class="btn" type="submit">Save</button><button class="btn ghost" type="button" data-act="close">Cancel</button></div></form>';
+}
+function formData(form){var o={};$$('input,select,textarea',form).forEach(function(el){if(el.name)o[el.name]=el.type==='checkbox'?el.checked:el.value;});return o;}
+function showErrors(form,errors){$$('[data-err]',form).forEach(function(el){el.textContent=errors[el.getAttribute('data-err')]||'';});}
 
-  EXAMPLES.push({
-    id: 'exp1', topic: 'algebra', kind: 'calc', title: 'Expand binomial',
-    prompt: 'Expand (2x + 3)^2',
-    solve: () => solCalc(
-      'Expand binomial',
-      '(2x + 3)²',
-      'Expand fully',
-      [
-        { work: '(2x + 3)² = (2x + 3)(2x + 3)', why: 'Definition of square' },
-        { work: '= 2x·2x + 2x·3 + 3·2x + 3·3', why: 'Distributive law' },
-        { work: '= 4x² + 6x + 6x + 9', why: 'Multiply terms' },
-        { work: '= 4x² + 12x + 9', why: 'Combine like terms' }
-      ],
-      '4x² + 12x + 9',
-      'algebra'
-    )
-  });
+/* ---------- csv ---------- */
+function csvCell(v){var s=String(v==null?'':v);if(/^[=+\-@]/.test(s))s="'"+s;return '"'+s.replace(/"/g,'""')+'"';}
+function exportCsv(){
+  var rows=[['Registration ID','Name','Email','Phone','Institution','Event','Fest','Status','Registered at','Notes']];
+  partList().forEach(function(r){var ev=event(r.eventId)||{};rows.push([r.id,r.name,r.email,r.phone,r.inst,ev.title||'',(fest(ev.festId)||{}).name||'',r.status,r.createdAt,r.notes]);});
+  var csv=rows.map(function(r){return r.map(csvCell).join(',');}).join('\r\n');
+  try{var blob=new Blob([csv],{type:'text/csv'});var a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='participants.csv';document.body.appendChild(a);a.click();a.remove();toast('CSV exported ('+(rows.length-1)+' rows)');}
+  catch(e){toast('Export is not supported in this browser',true);}
+  return csv;
+}
+window.__festdeskCsv=exportCsv;
 
-  EXAMPLES.push({
-    id: 'quadf', topic: 'algebra', kind: 'calc', title: 'Quadratic formula',
-    prompt: 'Solve x^2 + 4x + 1 = 0 using the quadratic formula',
-    solve: () => solCalc(
-      'Quadratic formula',
-      'x² + 4x + 1 = 0',
-      'Solve for x',
-      [
-        { work: 'a = 1, b = 4, c = 1', why: 'Identify coefficients in ax² + bx + c = 0' },
-        { work: 'x = (−b ± √(b² − 4ac)) / (2a)', why: 'Quadratic formula' },
-        { work: 'Discriminant Δ = 16 − 4 = 12', why: 'Compute b² − 4ac' },
-        { work: 'x = (−4 ± √12) / 2', why: 'Substitute into the formula' },
-        { work: 'x = (−4 ± 2√3) / 2 = −2 ± √3', why: 'Simplify radical and fraction' }
-      ],
-      'x = −2 + √3 or x = −2 − √3',
-      'algebra'
-    )
-  });
+/* ---------- router ---------- */
+function route(){
+  var h=location.hash.replace(/^#/,'')||'/',p=h.split('/').filter(Boolean),html,nav='home';
+  if(!p.length)html=viewHome();
+  else if(p[0]==='fest')html=viewFest(p[1]);
+  else if(p[0]==='event')html=viewEvent(p[1]);
+  else if(p[0]==='my'){html=viewMy();nav='my';}
+  else if(p[0]==='admin'){html=viewAdmin();nav='admin';}
+  else html=notFound();
+  $('#app').innerHTML=html;
+  $$('nav.main a').forEach(function(a){a.classList.toggle('active',a.getAttribute('data-nav')===nav);});
+  document.title=(p[0]==='admin'?'Organizer':p[0]==='my'?'My Registrations':p[0]==='event'&&event(p[1])?event(p[1]).title:p[0]==='fest'&&fest(p[1])?fest(p[1]).name:'Fests & Events')+' · FestDesk';
+  if(p[0]!=='event')ui.lastReg=null;
+  window.scrollTo(0,0);
+}
+function rerender(){var y=window.scrollY;var h=location.hash.replace(/^#/,'')||'/';var p=h.split('/').filter(Boolean);var html;
+  if(!p.length)html=viewHome();else if(p[0]==='fest')html=viewFest(p[1]);else if(p[0]==='event')html=viewEvent(p[1]);else if(p[0]==='my')html=viewMy();else if(p[0]==='admin')html=viewAdmin();else html=notFound();
+  $('#app').innerHTML=html;window.scrollTo(0,y);}
+window.addEventListener('hashchange',route);
 
-  EXAMPLES.push({
-    id: 'deriv1', topic: 'calculus', kind: 'calc', title: 'Power rule derivative',
-    prompt: 'Differentiate y = 3x^4 - 2x + 5',
-    solve: () => solCalc(
-      'Differentiation',
-      'y = 3x⁴ − 2x + 5',
-      'Find dy/dx',
-      [
-        { work: 'y = 3x⁴ − 2x + 5', why: 'Given function' },
-        { work: 'd/dx[xⁿ] = n xⁿ⁻¹', why: 'Power rule' },
-        { work: 'd/dx[3x⁴] = 12x³', why: 'Power rule and constant multiple rule' },
-        { work: 'd/dx[−2x] = −2', why: 'Derivative of x is 1' },
-        { work: 'd/dx[5] = 0', why: 'Derivative of a constant is 0' },
-        { work: 'dy/dx = 12x³ − 2', why: 'Sum rule' }
-      ],
-      'dy/dx = 12x³ − 2',
-      'calculus'
-    )
-  });
-
-  EXAMPLES.push({
-    id: 'lim1', topic: 'calculus', kind: 'calc', title: 'Standard limit',
-    prompt: 'Evaluate lim x->0 (sin x)/x',
-    solve: () => solCalc(
-      'Standard limit',
-      'lim (x→0) (sin x)/x',
-      'Evaluate the limit',
-      [
-        { work: 'lim (x→0) (sin x)/x', why: 'Given' },
-        { work: 'This is a standard trigonometric limit', why: 'HSC / calculus standard result' },
-        { work: 'lim (x→0) (sin x)/x = 1', why: 'Standard limit (requires geometric or analytic argument in full course)' }
-      ],
-      '1',
-      'calculus'
-    )
-  });
-
-  EXAMPLES.push({
-    id: 'trig1', topic: 'trig', kind: 'calc', title: 'Trig value',
-    prompt: 'Find the value of sin^2 θ + cos^2 θ',
-    solve: () => solCalc(
-      'Pythagorean identity',
-      'sin²θ + cos²θ',
-      'Simplify',
-      [
-        { work: 'sin²θ + cos²θ', why: 'Given expression' },
-        { work: 'sin²θ + cos²θ = 1', why: 'Fundamental Pythagorean identity' }
-      ],
-      '1',
-      'trig'
-    )
-  });
-
-  EXAMPLES.push({
-    id: 'line1', topic: 'coord', kind: 'calc', title: 'Slope of a line',
-    prompt: 'Find the slope of the line through (1, 2) and (3, 8)',
-    solve: () => solCalc(
-      'Slope',
-      'Points A(1, 2), B(3, 8)',
-      'Find slope m',
-      [
-        { work: 'm = (y₂ − y₁) / (x₂ − x₁)', why: 'Slope formula' },
-        { work: 'm = (8 − 2) / (3 − 1)', why: 'Substitute coordinates' },
-        { work: 'm = 6 / 2 = 3', why: 'Simplify' }
-      ],
-      'm = 3',
-      'coord'
-    )
-  });
-
-  EXAMPLES.push({
-    id: 'stat1', topic: 'stats', kind: 'calc', title: 'Mean',
-    prompt: 'Find the mean of 4, 6, 8, 10',
-    solve: () => solCalc(
-      'Arithmetic mean',
-      'Data: 4, 6, 8, 10',
-      'Find the mean',
-      [
-        { work: 'Mean = (sum of values) / (number of values)', why: 'Definition of arithmetic mean' },
-        { work: 'Sum = 4 + 6 + 8 + 10 = 28', why: 'Add the observations' },
-        { work: 'n = 4', why: 'Count of data points' },
-        { work: 'Mean = 28 / 4 = 7', why: 'Divide' }
-      ],
-      '7',
-      'stats'
-    )
-  });
-
-  // Proofs
-  EXAMPLES.push({
-    id: 'pr1', topic: 'proof', kind: 'proof', title: 'Square of a sum',
-    prompt: 'Prove that (a + b)² = a² + 2ab + b²',
-    solve: () => ({
-      kind: 'proof',
-      title: 'Square of a sum',
-      statement: '(a + b)² = a² + 2ab + b²',
-      given: 'a, b real numbers',
-      toProve: '(a + b)² = a² + 2ab + b²',
-      plan: [
-        'Write the square as a product (a + b)(a + b).',
-        'Expand using the distributive law.',
-        'Combine like terms to reach the right-hand side.'
-      ],
-      formal: [
-        { s: 'LHS = (a + b)²', tag: 'Given / definition' },
-        { s: '= (a + b)(a + b)', tag: 'Definition of square' },
-        { s: '= a(a + b) + b(a + b)', tag: 'Distributive law' },
-        { s: '= a² + ab + ba + b²', tag: 'Distributive law' },
-        { s: '= a² + ab + ab + b²', tag: 'Multiplication is commutative' },
-        { s: '= a² + 2ab + b² = RHS', tag: 'Combine like terms' }
-      ],
-      intuition: 'Squaring a sum produces two square terms and a double product from the cross terms.'
-    })
-  });
-
-  EXAMPLES.push({
-    id: 'pr2', topic: 'proof', kind: 'proof', title: 'Square of a difference',
-    prompt: 'Prove that (a - b)² = a² - 2ab + b²',
-    solve: () => ({
-      kind: 'proof',
-      title: 'Square of a difference',
-      statement: '(a − b)² = a² − 2ab + b²',
-      given: 'a, b real numbers',
-      toProve: '(a − b)² = a² − 2ab + b²',
-      plan: [
-        'Write (a − b)² as (a − b)(a − b).',
-        'Expand carefully with the minus signs.',
-        'Combine like terms.'
-      ],
-      formal: [
-        { s: 'LHS = (a − b)² = (a − b)(a − b)', tag: 'Definition' },
-        { s: '= a(a − b) − b(a − b)', tag: 'Distributive law' },
-        { s: '= a² − ab − ba + b²', tag: 'Expand' },
-        { s: '= a² − 2ab + b² = RHS', tag: 'Combine like terms' }
-      ],
-      intuition: 'Same pattern as (a + b)², but the cross terms are negative.'
-    })
-  });
-
-  EXAMPLES.push({
-    id: 'pr3', topic: 'proof', kind: 'proof', title: 'Even product idea',
-    prompt: 'Prove that the product of two even integers is even',
-    solve: () => ({
-      kind: 'proof',
-      title: 'Product of even integers',
-      statement: 'If m and n are even integers, then mn is even',
-      given: 'm = 2k, n = 2ℓ for integers k, ℓ',
-      toProve: 'mn is divisible by 2',
-      plan: [
-        'Use the definition of even: an integer is even if it is 2 times an integer.',
-        'Substitute m and n, multiply, and factor out 2.'
-      ],
-      formal: [
-        { s: 'Let m and n be even. Then m = 2k and n = 2ℓ for some integers k, ℓ', tag: 'Definition of even' },
-        { s: 'mn = (2k)(2ℓ) = 4kℓ = 2(2kℓ)', tag: 'Algebra' },
-        { s: '2kℓ is an integer', tag: 'Integers closed under multiplication' },
-        { s: 'Therefore mn = 2 × (integer), so mn is even', tag: 'Definition of even' }
-      ],
-      intuition: 'Each factor contributes a 2, so the product has a factor of 2 (actually 4).'
-    })
-  });
-
-  EXAMPLES.push({
-    id: 'pr4', topic: 'proof', kind: 'proof', title: 'Pythagorean identity sketch',
-    prompt: 'Prove sin²θ + cos²θ = 1 (unit-circle form)',
-    solve: () => ({
-      kind: 'proof',
-      title: 'Pythagorean identity',
-      statement: 'sin²θ + cos²θ = 1',
-      given: 'Point P on the unit circle at angle θ has coordinates (cos θ, sin θ)',
-      toProve: 'sin²θ + cos²θ = 1',
-      plan: [
-        'Use the unit circle definition of sine and cosine.',
-        'Apply the distance (Pythagoras) from origin to P.'
-      ],
-      formal: [
-        { s: 'On the unit circle, P = (cos θ, sin θ) and OP = 1', tag: 'Definition' },
-        { s: 'By Pythagoras, (cos θ)² + (sin θ)² = OP²', tag: 'Pythagoras' },
-        { s: 'cos²θ + sin²θ = 1² = 1', tag: 'Algebra' }
-      ],
-      intuition: 'Sine and cosine are the legs of a right triangle inside a circle of radius 1.'
-    })
-  });
-
-
-  EXAMPLES.push({
-    id: 'lin2', topic: 'algebra', kind: 'calc', title: 'Linear with fraction',
-    prompt: 'Solve (2x)/3 + 1 = 5',
-    solve: () => solCalc('Linear equation','(2x)/3 + 1 = 5','Find x',[
-      {work:'(2x)/3 + 1 = 5',why:'Given'},
-      {work:'(2x)/3 = 4',why:'Subtract 1 from both sides'},
-      {work:'2x = 12',why:'Multiply both sides by 3'},
-      {work:'x = 6',why:'Divide by 2'}
-    ],'x = 6','algebra')
-  });
-  EXAMPLES.push({
-    id: 'fac1', topic: 'algebra', kind: 'calc', title: 'Factor quadratic',
-    prompt: 'Factor x^2 + 7x + 12',
-    solve: () => solCalc('Factor','x² + 7x + 12','Factorise',[
-      {work:'Numbers that multiply to 12 and add to 7: 3 and 4',why:'Factoring'},
-      {work:'(x + 3)(x + 4)',why:'Write as product of binomials'}
-    ],'(x + 3)(x + 4)','algebra')
-  });
-  EXAMPLES.push({
-    id: 'exp2', topic: 'algebra', kind: 'calc', title: 'Expand (x-4)²',
-    prompt: 'Expand (x - 4)^2',
-    solve: () => solCalc('Expand','(x − 4)²','Expand',[
-      {work:'(x − 4)² = x² − 8x + 16',why:'(a − b)² = a² − 2ab + b²'}
-    ],'x² − 8x + 16','algebra')
-  });
-  EXAMPLES.push({
-    id: 'log1', topic: 'algebra', kind: 'calc', title: 'Log equation',
-    prompt: 'Solve log10 x = 2',
-    solve: () => solCalc('Logarithm','log₁₀ x = 2','Find x',[
-      {work:'log₁₀ x = 2',why:'Given'},
-      {work:'x = 10² = 100',why:'Definition of logarithm'}
-    ],'x = 100','algebra')
-  });
-  EXAMPLES.push({
-    id: 'mid1', topic: 'coord', kind: 'calc', title: 'Midpoint',
-    prompt: 'Midpoint of (2, 4) and (6, 10)',
-    solve: () => solCalc('Midpoint','A(2,4), B(6,10)','Find midpoint',[
-      {work:'M = ((x₁+x₂)/2, (y₁+y₂)/2)',why:'Midpoint formula'},
-      {work:'M = (4, 7)',why:'Substitute'}
-    ],'(4, 7)','coord')
-  });
-  EXAMPLES.push({
-    id: 'dist1', topic: 'coord', kind: 'calc', title: 'Distance',
-    prompt: 'Distance between (0,0) and (3,4)',
-    solve: () => solCalc('Distance','O(0,0), P(3,4)','Find distance',[
-      {work:'d = √[(x₂−x₁)² + (y₂−y₁)²]',why:'Distance formula'},
-      {work:'d = √(9+16) = 5',why:'Simplify'}
-    ],'5','coord')
-  });
-  EXAMPLES.push({
-    id: 'int1', topic: 'calculus', kind: 'calc', title: 'Basic integral',
-    prompt: 'Integrate 6x^2 dx',
-    solve: () => solCalc('Integral','∫ 6x² dx','Antiderivative',[
-      {work:'∫ xⁿ dx = xⁿ⁺¹/(n+1) + C',why:'Power rule for integration'},
-      {work:'∫ 6x² dx = 2x³ + C',why:'Constant multiple + power rule'}
-    ],'2x³ + C','calculus')
-  });
-  EXAMPLES.push({
-    id: 'chain1', topic: 'calculus', kind: 'calc', title: 'Chain rule',
-    prompt: 'Differentiate y = (3x + 1)^2',
-    solve: () => solCalc('Chain rule','y = (3x + 1)²','dy/dx',[
-      {work:'u = 3x + 1, y = u²',why:'Substitution'},
-      {work:'dy/dx = 2u · 3 = 6(3x + 1)',why:'Chain rule'}
-    ],'dy/dx = 6(3x + 1)','calculus')
-  });
-  EXAMPLES.push({
-    id: 'prob1', topic: 'stats', kind: 'calc', title: 'Simple probability',
-    prompt: 'Probability of rolling a 4 on a fair die',
-    solve: () => solCalc('Probability','Fair die','P(4)',[
-      {work:'P = favourable / total = 1/6',why:'Classical probability'}
-    ],'1/6','stats')
-  });
-  EXAMPLES.push({
-    id: 'pr5', topic: 'proof', kind: 'proof', title: 'Odd + odd = even',
-    prompt: 'Prove the sum of two odd integers is even',
-    solve: () => ({
-      kind: 'proof', title: 'Sum of two odds', statement: 'Odd + odd = even',
-      given: 'm = 2k+1, n = 2ℓ+1', toProve: 'm+n is even',
-      plan: ['Write both integers as 2·integer + 1.','Add and factor out 2.'],
-      formal: [
-        {s:'m = 2k+1, n = 2ℓ+1',tag:'Definition of odd'},
-        {s:'m+n = 2(k+ℓ+1)',tag:'Algebra'},
-        {s:'m+n is even',tag:'Definition of even'}
-      ],
-      intuition: 'The two leftover +1 terms make +2, which is even.'
-    })
-  });
-
-
-  // ---- BSc module expansions ----
-  EXAMPLES.push({
-    id: 'bsc_chain', topic: 'calculus', kind: 'calc', title: 'Chain rule (BSc)',
-    prompt: 'Differentiate y = (3x + 1)^2',
-    solve: () => solCalc('Chain rule','y = (3x+1)²','dy/dx',[
-      {work:'u = 3x+1, y = u²',why:'Substitution'},
-      {work:'dy/du = 2u, du/dx = 3',why:'Power rule'},
-      {work:'dy/dx = 6(3x+1)',why:'Chain rule'}
-    ],'dy/dx = 6(3x+1)','calculus')
-  });
-  EXAMPLES.push({
-    id: 'bsc_prod', topic: 'calculus', kind: 'calc', title: 'Product rule',
-    prompt: 'Differentiate y = x^2 sin x',
-    solve: () => solCalc('Product rule','y = x² sin x','dy/dx',[
-      {work:'u=x², v=sin x',why:'Factors'},
-      {work:'y′ = 2x sin x + x² cos x',why:'Product rule'}
-    ],'2x sin x + x² cos x','calculus')
-  });
-  EXAMPLES.push({
-    id: 'bsc_quot', topic: 'calculus', kind: 'calc', title: 'Quotient rule',
-    prompt: 'Differentiate y = (x+1)/(x-1)',
-    solve: () => solCalc('Quotient rule','y=(x+1)/(x−1)','dy/dx',[
-      {work:'u=x+1, v=x−1',why:'Numerator/denominator'},
-      {work:'y′ = −2/(x−1)²',why:'Quotient rule'}
-    ],'−2/(x−1)²','calculus')
-  });
-  EXAMPLES.push({
-    id: 'bsc_parts', topic: 'calculus', kind: 'calc', title: 'Integration by parts',
-    prompt: 'Integrate x e^x dx',
-    solve: () => solCalc('Integration by parts','∫ x eˣ dx','Antiderivative',[
-      {work:'u=x, dv=eˣ dx ⇒ du=dx, v=eˣ',why:'LIATE choice'},
-      {work:'∫ = x eˣ − ∫ eˣ dx = eˣ(x−1)+C',why:'Integration by parts'}
-    ],'eˣ(x−1)+C','calculus')
-  });
-  EXAMPLES.push({
-    id: 'bsc_pf', topic: 'calculus', kind: 'calc', title: 'Partial fractions',
-    prompt: 'Integrate 1/((x-1)(x-2)) dx',
-    solve: () => solCalc('Partial fractions','∫ dx/((x−1)(x−2))','Antiderivative',[
-      {work:'1/((x−1)(x−2))=A/(x−1)+B/(x−2)',why:'Setup'},
-      {work:'A=−1, B=1',why:'Cover-up method'},
-      {work:'ln|(x−2)/(x−1)| + C',why:'Integrate'}
-    ],'ln|(x−2)/(x−1)| + C','calculus')
-  });
-  EXAMPLES.push({
-    id: 'bsc_lh', topic: 'calculus', kind: 'calc', title: 'Limit (1-cos)/x²',
-    prompt: 'Evaluate lim x->0 (1 - cos x)/x^2',
-    solve: () => solCalc('Limit','lim (1−cos x)/x²','Evaluate',[
-      {work:'1−cos x = 2 sin²(x/2)',why:'Identity'},
-      {work:'= (1/2)[sin(x/2)/(x/2)]² → 1/2',why:'Standard limit'}
-    ],'1/2','calculus')
-  });
-  EXAMPLES.push({
-    id: 'bsc_imp', topic: 'calculus', kind: 'calc', title: 'Implicit differentiation',
-    prompt: 'Differentiate x^2 + y^2 = 25',
-    solve: () => solCalc('Implicit','x²+y²=25','dy/dx',[
-      {work:'2x + 2y y′ = 0',why:'Differentiate both sides'},
-      {work:'y′ = −x/y',why:'Solve for y′'}
-    ],'−x/y','calculus')
-  });
-  EXAMPLES.push({
-    id: 'bsc_det', topic: 'linalg', kind: 'calc', title: '2×2 determinant',
-    prompt: 'Compute det [[1,2],[3,4]]',
-    solve: () => solCalc('Determinant','A=[[1,2],[3,4]]','det A',[
-      {work:'ad−bc = 4−6 = −2',why:'2×2 formula'}
-    ],'−2','linalg')
-  });
-  EXAMPLES.push({
-    id: 'bsc_inv', topic: 'linalg', kind: 'calc', title: '2×2 inverse',
-    prompt: 'Invert [[1,1],[0,1]]',
-    solve: () => solCalc('Inverse','A=[[1,1],[0,1]]','A⁻¹',[
-      {work:'det=1 ≠ 0',why:'Invertible'},
-      {work:'A⁻¹ = [[1,−1],[0,1]]',why:'2×2 inverse formula'}
-    ],'[[1,−1],[0,1]]','linalg')
-  });
-  EXAMPLES.push({
-    id: 'bsc_gauss', topic: 'linalg', kind: 'calc', title: 'Gaussian elimination',
-    prompt: 'Solve x+y=3, 2x+y=4',
-    solve: () => solCalc('Elimination','x+y=3; 2x+y=4','Solve',[
-      {work:'R2−2R1 ⇒ y=2',why:'Eliminate x'},
-      {work:'x=1',why:'Back-substitution'}
-    ],'x=1, y=2','linalg')
-  });
-  EXAMPLES.push({
-    id: 'bsc_eig', topic: 'linalg', kind: 'calc', title: 'Eigenvalues 2×2',
-    prompt: 'Eigenvalues of [[2,1],[1,2]]',
-    solve: () => solCalc('Eigenvalues','A=[[2,1],[1,2]]','λ',[
-      {work:'det(A−λI)=0 ⇒ (2−λ)²−1=0',why:'Characteristic polynomial'},
-      {work:'λ=1 or λ=3',why:'Solve quadratic'}
-    ],'λ=1, 3','linalg')
-  });
-  EXAMPLES.push({
-    id: 'bsc_mat', topic: 'linalg', kind: 'calc', title: 'Matrix multiply',
-    prompt: 'Multiply [[1,2],[0,1]] · [[3,0],[1,2]]',
-    solve: () => solCalc('Product','A B','AB',[
-      {work:'(AB)ij = row i · col j',why:'Definition'},
-      {work:'AB=[[5,4],[1,2]]',why:'Dot products'}
-    ],'[[5,4],[1,2]]','linalg')
-  });
-  EXAMPLES.push({
-    id: 'bsc_sep', topic: 'de', kind: 'calc', title: 'Separable DE',
-    prompt: 'Solve dy/dx = y (y>0)',
-    solve: () => solCalc('Separable','dy/dx=y','General solution',[
-      {work:'dy/y = dx',why:'Separate'},
-      {work:'ln y = x+C₁ ⇒ y=Ceˣ',why:'Integrate'}
-    ],'y = C eˣ','de')
-  });
-  EXAMPLES.push({
-    id: 'bsc_if', topic: 'de', kind: 'calc', title: 'Integrating factor',
-    prompt: 'Solve y′ + y = e^x',
-    solve: () => solCalc('First-order linear','y′+y=eˣ','Solution',[
-      {work:'μ=e^{∫1 dx}=eˣ',why:'Integrating factor'},
-      {work:'(eˣ y)′ = e^{2x}',why:'Multiply by μ'},
-      {work:'y=(1/2)eˣ + C e^{−x}',why:'Integrate'}
-    ],'y = (1/2)eˣ + C e^{−x}','de')
-  });
-  EXAMPLES.push({
-    id: 'bsc_char', topic: 'de', kind: 'calc', title: 'Characteristic equation',
-    prompt: 'Solve y″ - 3y′ + 2y = 0',
-    solve: () => solCalc('Homogeneous DE','y″−3y′+2y=0','General solution',[
-      {work:'r²−3r+2=0 ⇒ (r−1)(r−2)=0',why:'Characteristic equation'},
-      {work:'y=C₁eˣ+C₂e^{2x}',why:'Distinct real roots'}
-    ],'y = C₁ eˣ + C₂ e^{2x}','de')
-  });
-  EXAMPLES.push({
-    id: 'bsc_geo', topic: 'series', kind: 'calc', title: 'Geometric series',
-    prompt: 'Sum of 1 + 1/2 + 1/4 + …',
-    solve: () => solCalc('Geometric series','Σ (1/2)^n','Sum',[
-      {work:'a=1, r=1/2, |r|<1',why:'Identify'},
-      {work:'Sum=a/(1−r)=2',why:'Infinite geometric formula'}
-    ],'2','series')
-  });
-  EXAMPLES.push({
-    id: 'bsc_bayes', topic: 'stats', kind: 'calc', title: 'Bayes theorem',
-    prompt: 'P(B)=0.3, P(A|B)=0.8, P(A|B^c)=0.1; find P(B|A)',
-    solve: () => solCalc('Bayes','priors and likelihoods','P(B|A)',[
-      {work:'P(A)=0.8·0.3+0.1·0.7=0.31',why:'Total probability'},
-      {work:'P(B|A)=0.24/0.31≈0.774',why:'Bayes theorem'}
-    ],'≈ 0.774','stats')
-  });
-  EXAMPLES.push({
-    id: 'bsc_ind', topic: 'proof', kind: 'proof', title: 'Induction sum',
-    prompt: 'Prove by induction: 1+2+…+n = n(n+1)/2',
-    solve: () => ({
-      kind:'proof', title:'Sum by induction',
-      statement:'1+…+n = n(n+1)/2 for n≥1',
-      given:'n positive integer', toProve:'Formula for all n≥1',
-      plan:['Base n=1','Assume for k','Prove for k+1'],
-      formal:[
-        {s:'n=1: both sides equal 1',tag:'Base case'},
-        {s:'Assume 1+…+k=k(k+1)/2',tag:'Induction hypothesis'},
-        {s:'1+…+k+1=(k+1)(k+2)/2',tag:'Algebra'},
-        {s:'True for all n≥1 by induction',tag:'Conclusion'}
-      ],
-      intuition:'Induction reduces infinitely many claims to a chain from the base.'
-    })
-  });
-  EXAMPLES.push({
-    id: 'bsc_sqrt2', topic: 'proof', kind: 'proof', title: '√2 irrational',
-    prompt: 'Prove √2 is irrational',
-    solve: () => ({
-      kind:'proof', title:'Irrationality of √2',
-      statement:'√2 is not rational',
-      given:'Standard', toProve:'√2 ∉ ℚ',
-      plan:['Assume p/q in lowest terms','Show p and q both even','Contradiction'],
-      formal:[
-        {s:'Assume √2=p/q, gcd(p,q)=1',tag:'Contradiction hypothesis'},
-        {s:'2q²=p² ⇒ p even ⇒ p=2k',tag:'Parity'},
-        {s:'q²=2k² ⇒ q even',tag:'Algebra'},
-        {s:'Contradicts gcd=1. Hence √2 irrational',tag:'Contradiction'}
-      ],
-      intuition:'Evenness propagates from squares.'
-    })
-  });
-
-
-  EXAMPLES.push({
-    id: 'bsc_lim_triple', topic: 'calculus', kind: 'calc', title: 'Hard limit cos product',
-    prompt: 'Evaluate lim (x→0) (1 − cos x · cos 2x · cos 3x) / x²',
-    solve: () => solCalc(
-      'Limit — product of cosines',
-      'lim (x→0) [1 − cos x · cos 2x · cos 3x] / x²',
-      'Evaluate the limit',
-      [
-        {work: 'As x→0, numerator → 1−1·1·1 = 0 and denominator → 0 (0/0 form)', why: 'Direct substitution'},
-        {work: 'Use Taylor: cos(kx) = 1 − (k² x²)/2 + O(x⁴)', why: 'Standard expansion about 0'},
-        {work: 'cos x · cos 2x · cos 3x = [1 − x²/2 + O(x⁴)][1 − 2x² + O(x⁴)][1 − (9/2)x² + O(x⁴)]', why: 'Substitute k = 1,2,3'},
-        {work: 'Product = 1 − (1/2 + 2 + 9/2)x² + O(x⁴) = 1 − 7x² + O(x⁴)', why: 'Multiply; keep up to x² terms'},
-        {work: '1 − product = 7x² + O(x⁴)', why: 'Subtract from 1'},
-        {work: '[1 − product]/x² = 7 + O(x²) → 7 as x→0', why: 'Divide by x² and take limit'}
-      ],
-      '7',
-      'calculus'
-    )
-  });
-
-  // ---- Lightweight pattern solver (examples remain the gold standard) ----
-  
-  EXAMPLES.push({
-    id: 'bsc_lim_tan', topic: 'calculus', kind: 'calc', title: 'Hard limit (tan−x)/(x−sin)',
-    prompt: 'Evaluate lim (x→0) (tan x − x) / (x − sin x)',
-    solve: () => solCalc(
-      'Limit — (tan x − x)/(x − sin x)',
-      'lim (x→0) (tan x − x)/(x − sin x)',
-      'Evaluate (no Taylor; L’Hôpital)',
-      [
-        {work: 'Substitute x = 0: (0−0)/(0−0) = 0/0', why: 'Indeterminate form'},
-        {work: 'Differentiate numerator and denominator (L’Hôpital)', why: '0/0 form'},
-        {work: '→ lim (sec² x − 1)/(1 − cos x)  (still 0/0 at 0)', why: 'd/dx tan x = sec² x; d/dx sin x = cos x'},
-        {work: 'Apply L’Hôpital again → lim (2 sec² x · tan x)/sin x  (still 0/0)', why: 'Derivative of sec² x is 2 sec² x tan x'},
-        {work: 'Apply L’Hôpital a third time: differentiate num and den', why: 'Still 0/0'},
-        {work: 'Num derivative involves 2[2 sec² x tan² x + sec⁴ x]; den → cos x', why: 'Product rule on 2 sec² x tan x'},
-        {work: 'At x = 0: sec 0 = 1, tan 0 = 0 → numerator factor 2(0 + 1) = 2, denominator cos 0 = 1', why: 'Evaluate limit after 3 applications'},
-        {work: 'Limit = 2', why: 'L’Hôpital three times resolves 0/0'}
-      ],
-      '2',
-      'calculus'
-    )
-  });
-
-function trySolve(text) {
-    const raw = text.replace(/\s+/g, ' ').trim();
-    if (!raw) return null;
-    const low = raw.toLowerCase();
-
-    // Exact example prompt match
-    const exact = EXAMPLES.find(e => e.kind === 'calc' && e.prompt.toLowerCase() === low);
-    if (exact) return exact.solve();
-    if (/(tan\s*x\s*[-−]\s*x)|(tanx\s*-\s*x)/.test(low) && /(x\s*[-−]\s*sin)|(x\s*-\s*sin)/.test(low)) {
-      const ex = EXAMPLES.find(e => e.id === 'bsc_lim_tan');
-      if (ex) return ex.solve();
-    }
-
-    // hard triple-cosine limit (flexible matching)
-    if (/1\s*[-−]\s*cos/.test(low) && /cos\s*2/.test(low) && /cos\s*3/.test(low)) {
-      const ex = EXAMPLES.find(e => e.id === 'bsc_lim_triple');
-      if (ex) return ex.solve();
-    }
-
-
-    // Keyword → example routing (BSc modules)
-    const routes = [
-      [/cos\s*2x|cos\s*3x|cos2x|cos3x/, 'bsc_lim_triple'],
-      [/chain rule|differentiate y = \(3x/, 'bsc_chain'],
-      [/product rule|x\^2 sin/, 'bsc_prod'],
-      [/quotient rule|\(x\+1\)\/\(x\-1\)/, 'bsc_quot'],
-      [/integration by parts|integrate x e/, 'bsc_parts'],
-      [/partial fraction|1\/\(\(x\-1\)\(x\-2\)\)/, 'bsc_pf'],
-      [/\(1\s*-\s*cos|1 - cos/, 'bsc_lh'],
-      [/implicit|x\^2 \+ y\^2/, 'bsc_imp'],
-      [/det(?:erminant)?|\[\[1,2\],\[3,4\]\]/, 'bsc_det'],
-      [/invert|inverse.*\[\[1,1\]/, 'bsc_inv'],
-      [/gaussian|solve x\+y=3/, 'bsc_gauss'],
-      [/eigenvalue/, 'bsc_eig'],
-      [/matrix multiply|\[\[1,2\],\[0,1\]\].*\[\[3,0\]/, 'bsc_mat'],
-      [/separable|dy\/dx = y/, 'bsc_sep'],
-      [/integrating factor|y′ \+ y|y' \+ y/, 'bsc_if'],
-      [/characteristic|y″|y''/, 'bsc_char'],
-      [/geometric series|1 \+ 1\/2 \+ 1\/4/, 'bsc_geo'],
-      [/bayes|p\(b\)=0\.3/, 'bsc_bayes'],
-      [/differentiate y = 3x\^4/, 'deriv1'],
-      [/lim.*sin x\)\/x|sin x \/ x/, 'lim1'],
-      [/mean of/, null], // handled by pattern
-    ];
-    for (const [re, id] of routes) {
-      if (id && re.test(low)) {
-        const ex = EXAMPLES.find(e => e.id === id);
-        if (ex) return ex.solve();
-      }
-    }
-
-    // expand (ax ± b)^2
-    let me = raw.match(/^(?:expand\s+)?\(\s*([+-]?\d*)\s*x\s*([+-]\s*\d+)\s*\)\s*\^\s*2\s*$/i);
-    if (me) {
-      let a = me[1];
-      if (a === '' || a === '+') a = 1;
-      if (a === '-') a = -1;
-      a = Number(a);
-      const b = Number(me[2].replace(/\s/g, ''));
-      const a2 = a * a, twoab = 2 * a * b, b2 = b * b;
-      const mid = (twoab >= 0 ? '+ ' + twoab + 'x' : '- ' + (-twoab) + 'x');
-      const ans = a2 + 'x² ' + mid + ' + ' + b2;
-      return solCalc('Expand binomial', raw, 'Expand fully', [
-        { work: raw, why: 'Given' },
-        { work: '(p + q)² = p² + 2pq + q²', why: 'Binomial square identity' },
-        { work: '= ' + ans, why: 'p = ' + a + 'x, q = ' + b }
-      ], ans, 'algebra');
-    }
-    me = raw.match(/^(?:expand\s+)?\(\s*x\s*([+-]\s*\d+)\s*\)\s*\^\s*2\s*$/i);
-    if (me) {
-      const b = Number(me[1].replace(/\s/g, ''));
-      const twoab = 2 * b, b2 = b * b;
-      const mid = twoab >= 0 ? '+ ' + twoab + 'x' : '- ' + (-twoab) + 'x';
-      const ans = 'x² ' + mid + ' + ' + b2;
-      return solCalc('Expand binomial', raw, 'Expand fully', [
-        { work: '(x ' + (b >= 0 ? '+ ' : '− ') + Math.abs(b) + ')²', why: 'Given' },
-        { work: '(a ± b)² = a² ± 2ab + b²', why: 'Binomial square identity' },
-        { work: '= ' + ans, why: 'Substitute a = x' }
-      ], ans, 'algebra');
-    }
-
-    // differentiate power: d/dx x^n or y = c x^n
-    me = raw.match(/^(?:differentiate|d\/dx)\s*(?:y\s*=\s*)?([+-]?\d*)\s*x\s*\^\s*(\d+)\s*$/i);
-    if (me) {
-      let c = me[1];
-      if (c === '' || c === '+') c = 1;
-      if (c === '-') c = -1;
-      c = Number(c);
-      const n = Number(me[2]);
-      const nc = c * n, np = n - 1;
-      return solCalc('Power rule', raw, 'Differentiate', [
-        { work: 'd/dx[xⁿ] = n xⁿ⁻¹', why: 'Power rule' },
-        { work: 'd/dx[' + c + 'x^' + n + '] = ' + nc + 'x^' + np, why: 'Constant multiple + power rule' }
-      ], (nc === 1 ? '' : nc === -1 ? '-' : String(nc)) + (np === 0 ? '' : np === 1 ? 'x' : 'x^' + np) || '0', 'calculus');
-    }
-
-    // linear ax + b = c
-    let m = raw.match(/^([+-]?\d*)\s*\*?\s*x\s*([+-]\s*\d+)\s*=\s*([+-]?\d+)\s*$/i);
-    if (m) {
-      let a = m[1];
-      if (a === '' || a === '+') a = 1;
-      if (a === '-') a = -1;
-      a = Number(a);
-      const b = Number(m[2].replace(/\s/g, ''));
-      const c = Number(m[3]);
-      return solCalc('Linear equation', raw, 'Solve for x', [
-        { work: a + 'x + (' + b + ') = ' + c, why: 'Given linear equation' },
-        { work: a + 'x = ' + (c - b), why: 'Subtract constant from both sides' },
-        { work: 'x = ' + ((c - b) / a), why: 'Divide by coefficient of x' }
-      ], 'x = ' + ((c - b) / a), 'algebra');
-    }
-
-    // quadratic x^2 ± bx ± c = 0
-    m = raw.match(/^x\^2\s*([+-]\s*\d+)\s*x\s*([+-]\s*\d+)\s*=\s*0$/i);
-    if (m) {
-      const b = Number(m[1].replace(/\s/g, ''));
-      const c = Number(m[2].replace(/\s/g, ''));
-      const disc = b * b - 4 * c;
-      if (disc >= 0) {
-        const r = Math.sqrt(disc);
-        const x1 = (-b + r) / 2, x2 = (-b - r) / 2;
-        return solCalc('Quadratic equation', raw, 'Solve for x', [
-          { work: 'a = 1, b = ' + b + ', c = ' + c, why: 'Coefficients of ax² + bx + c = 0' },
-          { work: 'Δ = b² − 4ac = ' + disc, why: 'Discriminant' },
-          { work: 'x = (−b ± √Δ) / 2a', why: 'Quadratic formula' },
-          { work: 'x = ' + x1 + ' or x = ' + x2, why: 'Evaluate both roots' }
-        ], 'x = ' + x1 + ' or x = ' + x2, 'algebra');
-      }
-    }
-
-    // mean of a, b, c
-    m = raw.match(/^mean of ([0-9.,\s]+)$/i);
-    if (m) {
-      const nums = m[1].split(/[,\s]+/).filter(Boolean).map(Number);
-      if (nums.length && nums.every(n => !isNaN(n))) {
-        const sum = nums.reduce((a, b) => a + b, 0);
-        const mean = sum / nums.length;
-        return solCalc('Mean', 'Data: ' + nums.join(', '), 'Find the mean', [
-          { work: 'Sum = ' + sum, why: 'Add observations' },
-          { work: 'n = ' + nums.length, why: 'Count' },
-          { work: 'Mean = ' + mean, why: 'Definition: sum / n' }
-        ], String(mean), 'stats');
-      }
-    }
-
-    // det [[a,b],[c,d]]
-    m = raw.match(/det(?:erminant)?\s*\[\[\s*([+-]?\d+)\s*,\s*([+-]?\d+)\s*\]\s*,\s*\[\s*([+-]?\d+)\s*,\s*([+-]?\d+)\s*\]\]/i);
-    if (m) {
-      const a = +m[1], b = +m[2], c = +m[3], d = +m[4];
-      const det = a * d - b * c;
-      return solCalc('Determinant 2×2', raw, 'Compute det', [
-        { work: 'det = ad − bc', why: '2×2 determinant formula' },
-        { work: det + ' = (' + a + ')(' + d + ') − (' + b + ')(' + c + ')', why: 'Substitute' }
-      ], String(det), 'linalg');
-    }
-
-    // fuzzy: if user types a known example title-ish
-    const fuzzy = EXAMPLES.find(e => e.kind === 'calc' && (low.includes(e.title.toLowerCase()) || e.prompt.toLowerCase().includes(low.slice(0, 24))));
-    if (fuzzy && low.length > 8) return fuzzy.solve();
-
-    return null;
+/* ---------- events ---------- */
+document.addEventListener('input',function(e){
+  var t=e.target;
+  if(t.id==='q'){ui.q=t.value;$('#results').innerHTML=resultsHtml();}
+  else if(t.id==='pq'){ui.pq=t.value;$('#ptable').innerHTML=partTable();}
+  if(t.form&&t.name){var er=$('[data-err="'+t.name+'"]',t.form);if(er)er.textContent='';var g=$('[data-err="_"]',t.form);if(g)g.textContent='';}
+});
+document.addEventListener('change',function(e){
+  var t=e.target,act=t.getAttribute&&t.getAttribute('data-act');
+  if(t.id==='cat'){ui.cat=t.value;$('#results').innerHTML=resultsHtml();}
+  else if(t.id==='festf'){ui.fest=t.value;$('#results').innerHTML=resultsHtml();}
+  else if(t.id==='openonly'){ui.openOnly=t.checked;$('#results').innerHTML=resultsHtml();}
+  else if(t.id==='pev'){ui.pev=t.value;$('#ptable').innerHTML=partTable();}
+  else if(t.id==='pst'){ui.pst=t.value;$('#ptable').innerHTML=partTable();}
+  else if(act==='setstatus'){
+    if(!isAdmin())return;
+    var r=db.regs.filter(function(x){return x.id===t.getAttribute('data-id');})[0];if(!r)return;
+    var ev=event(r.eventId),was=isActive(r),next=t.value;
+    if(!was&&(next==='pending'||next==='confirmed')&&ev&&seatsLeft(ev)<=0){toast('No seats left for this event. Raise its capacity first.',true);t.value=r.status;return;}
+    r.status=next;save();toast('Status updated to '+next);$('#ptable').innerHTML=partTable();
   }
-
-function tryProve(text) {
-    const raw = text.replace(/\s+/g, ' ').trim();
-    if (!raw) return null;
-    const low = raw.toLowerCase();
-    const exact = EXAMPLES.find(e => e.kind === 'proof' && e.prompt.toLowerCase() === low);
-    if (exact) return exact.solve();
-    const pairs = [
-      [/induction|n\(n\+1\)|1\s*\+\s*2/, 'bsc_ind'],
-      [/√2|sqrt\s*2|irrational/, 'bsc_sqrt2'],
-      [/product of two even|even integers is even/, 'pr3'],
-      [/\(a\s*\+\s*b\).*2|square of a sum/, 'pr1'],
-      [/\(a\s*-\s*b\).*2|square of a difference/, 'pr2'],
-      [/odd.*odd|sum of two odd/, 'pr5'],
-      [/aether|skip/, null]
-    ];
-    for (const [re, id] of pairs) {
-      if (!id) continue;
-      if (re.test(low)) {
-        const ex = EXAMPLES.find(e => e.id === id);
-        if (ex) return ex.solve();
-      }
-    }
-    for (const e of EXAMPLES.filter(x => x.kind === 'proof')) {
-      if (low.includes(e.title.toLowerCase().slice(0, 10))) return e.solve();
-    }
-    return null;
+});
+document.addEventListener('click',function(e){
+  var el=e.target.closest?e.target.closest('[data-act]'):null;if(!el)return;
+  var act=el.getAttribute('data-act'),id=el.getAttribute('data-id');
+  if(act==='modal-bg'){if(e.target===el)closeModal();return;}
+  if(act==='close'){closeModal();return;}
+  if(act==='print'){window.print();return;}
+  if(act==='tab'){ui.adminTab=el.getAttribute('data-tab');rerender();return;}
+  if(act==='logout'){ssSet(SESS,null);rerender();return;}
+  if(act==='reset'){if(confirm('Reset all demo data? Registrations you added will be lost.')){db=seed();save();ui.lastReg=null;toast('Demo data reset');rerender();}return;}
+  if(act==='csv'){exportCsv();return;}
+  if(act==='new-fest'){openModal(festForm());return;}
+  if(act==='edit-fest'){openModal(festForm(fest(id)));return;}
+  if(act==='new-event'){if(!db.fests.length){toast('Create a fest first',true);return;}openModal(eventForm());return;}
+  if(act==='edit-event'){openModal(eventForm(event(id)));return;}
+  if(act==='del-fest'){var n=db.events.filter(function(x){return x.festId===id;}).length;if(confirm('Delete this fest'+(n?' and its '+n+' event(s) with all registrations':'')+'?')){var evIds=db.events.filter(function(x){return x.festId===id;}).map(function(x){return x.id;});db.regs=db.regs.filter(function(r){return evIds.indexOf(r.eventId)<0;});db.events=db.events.filter(function(x){return x.festId!==id;});db.fests=db.fests.filter(function(x){return x.id!==id;});save();toast('Fest deleted');rerender();}return;}
+  if(act==='del-event'){if(confirm('Delete this event and all its registrations?')){db.regs=db.regs.filter(function(r){return r.eventId!==id;});db.events=db.events.filter(function(x){return x.id!==id;});save();toast('Event deleted');rerender();}return;}
+  if(act==='del-reg'){if(confirm('Remove this registration permanently?')){db.regs=db.regs.filter(function(r){return r.id!==id;});save();toast('Registration removed');$('#ptable').innerHTML=partTable();}return;}
+  if(act==='edit-my'){var r=db.regs.filter(function(x){return x.id===id;})[0];if(r)openModal(myEditForm(r));return;}
+  if(act==='cancel-my'){var rr=db.regs.filter(function(x){return x.id===id;})[0];if(rr&&confirm('Cancel this registration? Your seat will be released.')){rr.status='cancelled';save();toast('Registration cancelled');rerender();}return;}
+});
+document.addEventListener('submit',function(e){
+  var f=e.target;e.preventDefault();
+  if(f.id==='regForm'){
+    var ev=event(f.getAttribute('data-event'));if(!ev)return;
+    var res=register(ev,formData(f));
+    if(!res.ok){showErrors(f,res.errors);var first=$('.err:not(:empty)',f);if(first&&first.previousElementSibling&&first.previousElementSibling.focus)first.previousElementSibling.focus();return;}
+    ui.lastReg=res.reg;ui.myEmail=res.reg.email;toast('Registration '+(res.reg.status==='confirmed'?'confirmed':'received')+'!');rerender();
   }
-
-function renderCalc(sol) {
-    if (!sol) {
-      return `<div class="panel"><p>Cannot justify this problem in BSc v1 for that input. Try an <strong>example</strong>, or rephrase as a standard linear/quadratic equation (e.g. <code>3x - 7 = 11</code>).</p></div>`;
-    }
-    const steps = sol.steps.map((s, i) => `
-      <li>
-        <div class="num">${i + 1}</div>
-        <div>
-          <div class="work">${escapeHtml(s.work)}</div>
-          <div class="why"><strong>Reason:</strong> ${escapeHtml(s.why)}</div>
-        </div>
-      </li>`).join('');
-    return `
-      <div class="sol-block" id="solPrint">
-        <div class="sol-head"><span>${escapeHtml(sol.title)}</span><span class="meta">${escapeHtml(sol.topic)}</span></div>
-        <div class="sec"><h5>Given</h5><div class="work">${escapeHtml(sol.given)}</div></div>
-        <div class="sec"><h5>Goal</h5><div>${escapeHtml(sol.goal)}</div></div>
-        <div class="sec"><h5>Working</h5><ol class="steps">${steps}</ol></div>
-        <div class="sec"><div class="answer"><span>Final answer</span>${escapeHtml(sol.answer)}</div></div>
-      </div>`;
+  else if(f.id==='myForm'){ui.myEmail=$('#myemail').value;ui.myChecked=true;if(validEmail(ui.myEmail.trim()))lsSet(EMAILKEY,ui.myEmail.trim().toLowerCase());rerender();}
+  else if(f.id==='loginForm'){
+    if($('#lu').value.trim()===ADMIN_USER&&$('#lp').value===ADMIN_PASS){ssSet(SESS,'1');rerender();}
+    else $('#lerr').textContent='Wrong username or password.';
   }
-
-  function renderProof(sol, mode) {
-    if (!sol) {
-      return `<div class="panel"><p>No reliable formal proof in v2 for this statement. Choose a <strong>proof example</strong> from the sidebar.</p></div>`;
-    }
-    const plan = `<div class="plan"><strong>Plan (understand first)</strong><ul>${sol.plan.map(p => `<li>${escapeHtml(p)}</li>`).join('')}</ul></div>`;
-    const formal = sol.formal.map((f, i) => `
-      <div class="formal-line">
-        <div class="num" style="width:32px;height:32px;font-size:.8rem">${i + 1}</div>
-        <div class="work">${escapeHtml(f.s)}</div>
-        <div class="tag">${escapeHtml(f.tag)}</div>
-      </div>`).join('');
-    const formalBlock = `<div class="sec"><h5>Formal proof</h5>${formal}<p style="margin:.75rem 0 0"><strong>Q.E.D.</strong></p></div>`;
-    const idea = mode === 'formal' ? '' : `<div class="sec"><h5>Idea</h5>${plan}<p class="why">${escapeHtml(sol.intuition || '')}</p></div>`;
-    const form = mode === 'understand' ? '' : formalBlock;
-    const both = mode === 'both' ? `<div class="two-col">${idea}${form}</div>` : `${idea}${form}`;
-    return `
-      <div class="sol-block" id="solPrint">
-        <div class="sol-head"><span>${escapeHtml(sol.title)}</span><span class="meta">Proof</span></div>
-        <div class="sec"><h5>Statement</h5><div class="work">${escapeHtml(sol.statement)}</div></div>
-        <div class="sec"><h5>Given</h5><div>${escapeHtml(sol.given)}</div></div>
-        <div class="sec"><h5>To prove</h5><div>${escapeHtml(sol.toProve)}</div></div>
-        ${mode === 'both' ? both : (mode === 'understand' ? idea : form)}
-      </div>`;
+  else if(f.id==='myEditForm'){
+    var r=db.regs.filter(function(x){return x.id===f.getAttribute('data-id');})[0];if(!r)return;
+    var d=formData(f),errs={};
+    if((d.name||'').trim().length<2)errs.name='Please enter your full name.';
+    if(!validPhone(d.phone||''))errs.phone='Enter a valid phone number.';
+    if((d.inst||'').trim().length<2)errs.inst='Enter your institution or class.';
+    if(Object.keys(errs).length){showErrors(f,errs);return;}
+    r.name=d.name.trim();r.phone=d.phone.trim();r.inst=d.inst.trim();save();closeModal();toast('Details updated');rerender();
   }
-
-  function escapeHtml(s) {
-    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  else if(f.id==='festForm'){
+    var d2=formData(f),er={},s=fromLocalInput(d2.start),en=fromLocalInput(d2.end);
+    if(!(d2.name||'').trim())er.name='Name is required.';
+    if(!s)er.start='Pick a start date.';
+    if(!en)er.end='Pick an end date.';
+    if(s&&en&&new Date(en)<new Date(s))er.end='End must be after start.';
+    if(Object.keys(er).length){showErrors(f,er);return;}
+    var fid=f.getAttribute('data-id'),obj=fid?fest(fid):null;
+    if(!obj){obj={id:'f-'+rid(6).toLowerCase()};db.fests.push(obj);}
+    obj.name=d2.name.trim();obj.desc=d2.desc.trim();obj.venue=d2.venue.trim();obj.start=s;obj.end=en;
+    save();closeModal();toast('Fest saved');rerender();
   }
-
-  function toast(msg) {
-    const t = $('#toast');
-    t.textContent = msg;
-    t.classList.add('show');
-    setTimeout(() => t.classList.remove('show'), 1600);
+  else if(f.id==='eventForm'){
+    var d3=formData(f),e3={},st=fromLocalInput(d3.start),dl=fromLocalInput(d3.deadline),cap=parseInt(d3.capacity,10);
+    if(!(d3.title||'').trim())e3.title='Title is required.';
+    if(!st)e3.start='Pick a start time.';
+    if(!dl)e3.deadline='Pick a deadline.';
+    if(st&&dl&&new Date(dl)>new Date(st))e3.deadline='Deadline must be before the event starts.';
+    if(!(cap>0))e3.capacity='Capacity must be at least 1.';
+    var eid=f.getAttribute('data-id');
+    if(eid&&cap>0&&cap<taken(eid))e3.capacity='Capacity cannot be below the '+taken(eid)+' active registrations.';
+    if(Object.keys(e3).length){showErrors(f,e3);return;}
+    var o=eid?event(eid):null;
+    if(!o){o={id:'e-'+rid(6).toLowerCase()};db.events.push(o);}
+    o.title=d3.title.trim();o.festId=d3.festId;o.category=d3.category;o.desc=d3.desc.trim();o.start=st;o.venue=d3.venue.trim();o.deadline=dl;o.capacity=cap;o.approval=d3.approval;o.info=d3.info.trim();
+    save();closeModal();toast('Event saved');rerender();
   }
+});
+document.addEventListener('keydown',function(e){if(e.key==='Escape')closeModal();});
 
-  // ---- UI wiring ----
-  let activeTopic = 'calculus';
-  let activeView = 'calc';
-
-  function renderTopics() {
-    const box = $('#topicChips');
-    box.innerHTML = TOPICS.map(t =>
-      `<button type="button" class="chip ${t.id === activeTopic ? 'active' : ''}" data-topic="${t.id}">${t.label}</button>`
-    ).join('');
-  }
-
-  function renderExamples() {
-    const box = $('#exampleChips');
-    const q = (($('#searchEx')||{}).value||'').toLowerCase();
-    const list = EXAMPLES.filter(e => {
-      if (activeView === 'prove') return e.kind === 'proof';
-      if (activeView === 'limits') return false;
-      if (activeTopic === 'proof') return e.kind === 'proof';
-      return e.kind === 'calc' && e.topic === activeTopic;
-    }).filter(e => !q || (e.title+' '+e.prompt).toLowerCase().includes(q));
-    box.innerHTML = list.length
-      ? list.map(e => `<button type="button" class="chip" data-ex="${e.id}">${e.title}</button>`).join('')
-      : '<span class="hint">No examples in this filter.</span>';
-  }
-
-  function setView(view) {
-    activeView = view;
-    $$('.nav-links button').forEach(b => b.classList.toggle('active', b.dataset.view === view));
-    $('#view-calc').classList.toggle('hidden', view !== 'calc');
-    $('#view-prove').classList.toggle('hidden', view !== 'prove');
-    $('#view-limits').classList.toggle('hidden', view !== 'limits');
-    $('#sidePanel').classList.toggle('hidden', view === 'limits');
-    if (view === 'prove') activeTopic = 'proof';
-    if (view === 'calc' && activeTopic === 'proof') activeTopic = 'algebra';
-    renderTopics();
-    renderExamples();
-  }
-
-  function runExample(id) {
-    const ex = EXAMPLES.find(e => e.id === id);
-    if (!ex) return;
-    if (ex.kind === 'calc') {
-      setView('calc');
-      $('#inputCalc').value = ex.prompt;
-      const sol = ex.solve();
-      $('#calcOut').innerHTML = renderCalc(sol);
-    } else {
-      setView('prove');
-      $('#inputProve').value = ex.prompt;
-      const sol = ex.solve();
-      $('#proveOut').innerHTML = renderProof(sol, $('#proofMode').value);
-    }
-  }
-
-  function solveCalc() {
-    const text = $('#inputCalc').value;
-    const fromEx = EXAMPLES.find(e => e.kind === 'calc' && e.prompt.toLowerCase() === text.trim().toLowerCase());
-    const sol = fromEx ? fromEx.solve() : trySolve(text);
-    $('#calcOut').innerHTML = renderCalc(sol);
-  }
-
-  function solveProve() {
-    const text = $('#inputProve').value;
-    const fromEx = EXAMPLES.find(e => e.kind === 'proof' && e.prompt.toLowerCase() === text.trim().toLowerCase());
-    const sol = fromEx ? fromEx.solve() : tryProve(text);
-    $('#proveOut').innerHTML = renderProof(sol, $('#proofMode').value);
-  }
-
-  function copyText(fromId) {
-    const root = $(fromId);
-    if (!root || !root.textContent.trim()) return toast('Nothing to copy');
-    navigator.clipboard.writeText(root.innerText).then(() => toast('Copied')).catch(() => toast('Copy failed'));
-  }
-
-  // events
-  $$('.nav-links button').forEach(b => b.addEventListener('click', () => setView(b.dataset.view)));
-  $('#topicChips').addEventListener('click', e => {
-    const t = e.target.closest('[data-topic]');
-    if (!t) return;
-    activeTopic = t.dataset.topic;
-    if (activeTopic === 'proof') setView('prove');
-    else {
-      if (activeView !== 'calc') setView('calc');
-      renderTopics();
-      renderExamples();
-    }
+/* ---------- theme ---------- */
+(function(){
+  var t=lsGet(THEMEKEY);if(t)document.documentElement.setAttribute('data-theme',t);
+  $('#themeBtn').addEventListener('click',function(){
+    var cur=document.documentElement.getAttribute('data-theme');
+    var dark=cur?cur==='dark':window.matchMedia&&window.matchMedia('(prefers-color-scheme: dark)').matches;
+    var next=dark?'light':'dark';document.documentElement.setAttribute('data-theme',next);lsSet(THEMEKEY,next);
   });
-  $('#exampleChips').addEventListener('click', e => {
-    const x = e.target.closest('[data-ex]');
-    if (x) runExample(x.dataset.ex);
-  });
-  $('#btnSolve').onclick = solveCalc;
-  $('#btnProve').onclick = solveProve;
-  $('#btnClear').onclick = () => { $('#inputCalc').value = ''; $('#calcOut').innerHTML = ''; };
-  $('#btnCopy').onclick = () => copyText('#calcOut');
-  $('#btnCopyProve').onclick = () => copyText('#proveOut');
-  $('#btnDemo').onclick = () => {
-    const order = ['bsc_lim_triple','bsc_chain','bsc_ind','bsc_eig'];
-    const id = order.find(i => EXAMPLES.some(e => e.id === i)) || 'bsc_chain';
-    runExample(id);
-  };
-  $('#btnPrint').onclick = () => window.print();
-  $('#inputCalc').addEventListener('keydown', e => {
-    if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) solveCalc();
-  });
-
-  renderTopics();
-  renderExamples();
-  const sx=$('#searchEx'); if(sx) sx.oninput=()=>renderExamples();
 })();
-  </script>
+
+$('#orgName').textContent=db.org.name;
+route();
+window.__festdesk={getDb:function(){return db;},state:state,register:register};
+})();
+</script>
 </body>
 </html>
